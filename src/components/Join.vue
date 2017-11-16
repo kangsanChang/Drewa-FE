@@ -55,7 +55,7 @@
 
 <script>
 import Config from '../config'
-
+import API from './../api/DrewaAPI'
 export default {
   name: 'join',
   data () {
@@ -115,18 +115,11 @@ export default {
       agree_toggle(e) {
           this.isAgreed = !this.isAgreed
       },
-
       // Element UI Notification
       // http://element.eleme.io/#/en-US/component/notification
-      duplicatedEmailError() {
-          this.$notify.error({
-              title: '중복 된 이메일이 존재합니다.',
-              message: '다른 이메일 번호를 입력해 주세요.'
-          });
-      },
       noRecaptchaError() {
           this.$notify.error({
-              title: '당신은 사람입니까?',
+              title: '사람이시죠?',
               message: 'reCAPTCHA 버튼을 클릭해 주세요.'
           });
       },
@@ -142,31 +135,55 @@ export default {
               message: '사용자 정보가 올바르게 입력되지 않았습니다.'
           });
       },
-      
+
+      emailDuplicatedError() {
+          // 폼 비우기
+          this.$refs['formRegister'].resetFields();
+          // recaptcha 다시 불러오기
+          grecaptcha.reset();
+          // noti 띄우기
+          this.$notify.error({
+              title: '이메일 중복',
+              message: '이미 가입 된 이메일입니다.'
+          });
+      },
+
       submitForm(formName) {
+        // agree validation
         if (this.isAgreed === false) {
             this.agreedError();
             return;
-        } else {
-            // input validation
-            this.$refs[formName].validate((valid) => {
-                if(valid) {
-                    // check reCAPTCHA
-                    // grecaptcha.getResponse() : reCAPTCHA 가 만들어낸 code
-                    if(grecaptcha.getResponse()) {
-                        // API CALL
-                        alert('success!!')
-                    } else {
-                        this.noRecaptchaError();
-                    }
+        } 
+        // input validation
+        this.$refs[formName].validate((valid) => {
+            if(valid) {
+                // check reCAPTCHA
+                // grecaptcha.getResponse() : reCAPTCHA 가 만들어낸 code. 서버에서 검증
+                // 여러 개의 폼을 검증 할 경우 () 안에 key 값 적어준다. 안적으면 첫번재 리캡챠만 가능.
+                const recap_code = grecaptcha.getResponse();
+                if(recap_code) {
+                    // API CALL
+                    API.addApplicant(this.formRegister, recap_code)
+                    .then((res) => {
+                        if(res.status === 200){
+                            // 받아 온 토큰과 applicantID를 vuex 에 넣어야 함.
+                            // Redirect to 'applicant status page' (가제)
+                            console.log('success!! \n Email : ', res.config.data,'\n RESDATA: ', res.data.data);
+                        };
+                    })
+                    .catch((e) => {
+                        // 중요!!! 에러 핸들링 하기 위해선 e.response.data 를 까보면 알 수 있다.
+                        const err = e.response.data;
+                        if(err.msg === "User Already Exists") { this.emailDuplicatedError(); }
+                    });
                 } else {
-                    this.formError();
-                    return false;
+                    this.noRecaptchaError();
                 }
-            })
-        }
-        // 1. 중복되지 않는 이메일 계정이 맞는지
-        //확인되면 API 서버에 post 날리기. (나머진 서버의 몫)
+            } else {
+                this.formError();
+            }
+        })
+        return;
       }
   }
 }

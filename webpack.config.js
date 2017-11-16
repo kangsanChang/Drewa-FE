@@ -82,7 +82,16 @@ module.exports = {
   devServer: {
     historyApiFallback: true,
     noInfo: true,
-    overlay: true
+    overlay: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        // 어자피 localhost:3000/api 로 접근하므로 pathRewrite 할 필요 없음.
+        // 이대로 두면 http://localhost:3000/api 로 들어간다.
+        // pathRewrite: {"^/api": ""},
+      }
+    },
   },
   performance: {
     hints: false
