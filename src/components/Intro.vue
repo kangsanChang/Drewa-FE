@@ -16,8 +16,8 @@
                         </div>
                         <div class="buttons-wrapper">
                             <div class="buttons">
-                                <router-link to="/login" class="button" id="find-btn">지원서 조회</router-link>
-                                <router-link to="/join" class="button" id="create-btn">신규 작성</router-link>
+                                <router-link to="/login" class="button" id="find-btn">지원자 로그인</router-link>
+                                <a href="/join" class="button" id="create-btn">지원자 등록</a>
                             </div>
                         </div>
                     </el-col>

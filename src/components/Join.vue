@@ -111,16 +111,6 @@ export default {
           },
       }
   },
-  created() {
-      // g-recaptcha-response 객체가 비어있는지 (recaptcha 안 누르고 redirect 된 경우) 확인
-      // '-' hyphen 이 있는 객체는 배열처럼 접근한다.
-      const recap_query = this.$route.query["g-recaptcha-response"];
-      if (recap_query === "") {
-          this.noRecaptchaError();
-      } else {
-          console.log(recap_query);
-      }
-  },
   methods: {
       agree_toggle(e) {
           this.isAgreed = !this.isAgreed
