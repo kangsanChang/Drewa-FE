@@ -14,9 +14,6 @@
                             <div id="privacy-policy-content">
                                 <p>{{privacyPolicy}}</p>
                             </div>
-                            <div id="privacy-policy-info">
-                                지원서 등록을 위해 필요한 최소한의 개인정보이므로 동의를 해주셔야 지원서 등록이 가능합니다. 더 자세한 내용에 대해서는 <a href="/privacy-policy" style="color:black"><b>개인정보처리방침</b></a>을 참고해 주세요.
-                            </div>
                         </div>
                         <div id="agree-box">
                             <button id="agree-btn" :class="{active: isAgreed}" @click="agree_toggle">동의합니다</button>
@@ -41,7 +38,6 @@
                                     <div class="g-recaptcha" :data-sitekey="recaptchaSiteKey" align="center"></div>
                                 </el-form-item>
                                 <el-form-item id="submit-box">
-                                    <!-- el-button 이어야 작동함... 삽질 2시간한듯 -->
                                     <el-button id="submit" @click="submitForm('formRegister')">완료</el-button>
                                 </el-form-item>
                             </el-form>
@@ -63,12 +59,12 @@ export default {
       const checkPassword = (rule, value, cb) => {
           // 입력한 password 는 String 으로 들어옴
           // 정규식 리터럴을 이용한 pattern 생성
-          // 8~15 자 사이의 영문 + 숫자 패턴
-          const password_pattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,15}$/;
+          // 8~ 255 자 사이의 영문 + 숫자 패턴
+          const password_pattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,255}$/;
           if(password_pattern.test(value)) {
               cb();
           } else {
-              cb(new Error('비밀번호는 8~15 사이의 영문+숫자 여야 합니다.'));
+              cb(new Error('비밀번호는 8 자리 이상의 영문+숫자 여야 합니다.'));
           }
       };
       const confirmPassword = (rule, value, cb) => {
@@ -153,39 +149,43 @@ export default {
         if (this.isAgreed === false) {
             this.agreedError();
             return;
-        } 
+        }
         // input validation
-        this.$refs[formName].validate((valid) => {
-            if(valid) {
-                // check reCAPTCHA
-                // grecaptcha.getResponse() : reCAPTCHA 가 만들어낸 code. 서버에서 검증
-                // 여러 개의 폼을 검증 할 경우 () 안에 key 값 적어준다. 안적으면 첫번재 리캡챠만 가능.
-                const recap_code = grecaptcha.getResponse();
-                if(recap_code) {
-                    // API CALL
-                    API.addApplicant(this.formRegister, recap_code)
-                    .then((res) => {
-                        if(res.status === 200){
-                            // 받아 온 토큰과 applicantID를 vuex 에 넣어야 함.
-                            // Redirect to 'applicant status page' (가제)
-                            console.log('success!! \n Email : ', res.config.data,'\n RESDATA: ', res.data.data);
-                        };
-                    })
-                    .catch((e) => {
-                        // 중요!!! 에러 핸들링 하기 위해선 e.response.data 를 까보면 알 수 있다.
-                        const err = e.response.data;
-                        if(err.msg === "User Already Exists") { this.emailDuplicatedError(); }
-                    });
-                } else {
-                    this.noRecaptchaError();
-                }
-            } else {
+        this.$refs[formName].validate((isValid) => {
+            if(!isValid) {
                 this.formError();
+                return;
             }
+            // check reCAPTCHA
+            // grecaptcha.getResponse() : reCAPTCHA 가 만들어낸 code. 서버에서 검증
+            // 여러 개의 폼을 검증 할 경우 () 안에 key 값 적어준다. 안적으면 첫번재 리캡챠만 가능.
+            const recap_code = grecaptcha.getResponse();
+
+            // recap_code 가 string 으로 나음.
+            if(recap_code === "") {
+                this.noRecaptchaError();
+                return;
+            }
+
+            // SUCCESS
+            // START API CALL
+            API.addApplicant(this.formRegister, recap_code)
+            .then((res) => {
+                if(res.status === 200){
+                    // 받아 온 토큰과 applicantID를 vuex 에 넣어야 함.
+                    // Redirect to 'applicant status page' (가제)
+                    console.log('success!! \n Email : ', res.config.data,'\n RESDATA: ', res.data.data);
+                };
+            })
+            .catch((e) => {
+                // 중요!!! 에러 핸들링 하기 위해선 e.response.data 를 까보면 알 수 있다.
+                // 400 대로 오면 여기로 오는 듯
+                const err = e.response.data;
+                if(err.msg === "User Already Exists") { this.emailDuplicatedError(); }
+            });
         })
-        return;
-      }
-  }
+      },
+    }
 }
 </script>
 
@@ -218,6 +218,9 @@ hr {
 // Set layouts
 #register-form {
     margin-top: 10px;
+    .g-recaptcha {
+        margin-top: 20px;
+    }
 }
 
 #wrapper {
@@ -238,7 +241,7 @@ header {
         display: inline-block;
         margin-top: 21px;
         margin-bottom: 24px;
-        
+
         span {
             font-size: 1.2em;
         }
@@ -274,10 +277,6 @@ header {
             white-space: pre-wrap;
         }
     }
-
-    #privacy-policy-info {
-        margin-top: 18px;
-    }
 }
 
 #agree-box {
@@ -308,6 +307,10 @@ header {
 }
 
 #register-box {
+    max-width: 300px;
+    text-align: center;
+    margin: 0 auto;
+
     h3 {
         text-align: center;
         margin-top: 0;

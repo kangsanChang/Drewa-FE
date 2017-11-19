@@ -16,8 +16,8 @@
                         </div>
                         <div class="buttons-wrapper">
                             <div class="buttons">
-                                <router-link to="/login" class="button" id="find-btn">지원자 로그인</router-link>
-                                <a href="/join" class="button" id="create-btn">지원자 등록</a>
+                                <router-link to="/login" class="button" id="find-btn">지원서 조회</router-link>
+                                <a href="/join" class="button" id="create-btn">신규 작성</a>
                             </div>
                         </div>
                     </el-col>
@@ -55,6 +55,9 @@ export default {
 
 #title {
   text-align: center;
+  h2 {
+      margin-top: 0px;
+  }
 }
 
 #poster img {
@@ -70,10 +73,13 @@ export default {
 }
 .desc {
   white-space: pre-line;
+  // 폰트 사이즈에 맞추어 비율로 동작
+  line-height: 1.5;
 }
 
 .buttons-wrapper {
-    margin-top: 40px;
+    margin-top: 70px;
+    margin-bottom: 20px;
 }
 
 .buttons {
