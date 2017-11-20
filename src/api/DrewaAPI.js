@@ -5,11 +5,11 @@ import axios from 'axios';
 const BASE_URL = '/api';
 
 export default {
-  addApplicant(user, recap_code) {
+  addApplicant(user, recaptchaToken) {
       return axios.post(BASE_URL+'/applicants', {
          userEmail: user.email,
          userPassword: user.password,
-         recap_code
+         recaptchaToken
         });
   }
 };

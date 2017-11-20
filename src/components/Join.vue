@@ -24,21 +24,21 @@
                         <div id="register-box">
                             <h3>신규 지원자 등록</h3>
                             <span>지원서 작성을 위해 아래 정보를 입력해 주세요.</span>
-                            <el-form id="register-form" :model="formRegister" status-icon :rules="rules" ref="formRegister">
+                            <el-form id="register-form" :model="userInfo" status-icon :rules="rules" ref="userInfo">
                                 <el-form-item prop="email">
-                                    <el-input type="text" placeholder="이메일" v-model="formRegister.email"></el-input>
+                                    <el-input type="text" placeholder="이메일" v-model="userInfo.email"></el-input>
                                 </el-form-item>
                                 <el-form-item prop="password">
-                                    <el-input type="password" placeholder="비밀번호" v-model="formRegister.password"></el-input>
+                                    <el-input type="password" placeholder="비밀번호" v-model="userInfo.password"></el-input>
                                 </el-form-item>
                                 <el-form-item prop="confirm_password">
-                                    <el-input type="password" placeholder="비밀번호 재입력" v-model="formRegister.confirm_password"></el-input>
+                                    <el-input type="password" placeholder="비밀번호 재입력" v-model="userInfo.confirm_password"></el-input>
                                 </el-form-item>
                                 <el-form-item>
                                     <div class="g-recaptcha" :data-sitekey="recaptchaSiteKey" align="center"></div>
                                 </el-form-item>
                                 <el-form-item id="submit-box">
-                                    <el-button id="submit" @click="submitForm('formRegister')">완료</el-button>
+                                    <el-button id="submit" @click="submitForm('userInfo')">완료</el-button>
                                 </el-form-item>
                             </el-form>
                         </div>
@@ -68,7 +68,7 @@ export default {
           }
       };
       const confirmPassword = (rule, value, cb) => {
-          if (value !== this.formRegister.password) {
+          if (value !== this.userInfo.password) {
               cb(new Error('비밀번호와 일치하지 않습니다.'))
           } else {
               cb();
@@ -78,7 +78,7 @@ export default {
           isAgreed: false,
           recaptchaSiteKey: Config.RECAPTCHA_SITE_KEY,
           privacyPolicy: Config.PRIVACY_POLICY,
-          formRegister : {
+          userInfo : {
             email: '',
             password: '',
             confirm_password: '',
@@ -134,7 +134,7 @@ export default {
 
       emailDuplicatedError() {
           // 폼 비우기
-          this.$refs['formRegister'].resetFields();
+          this.$refs['userInfo'].resetFields();
           // recaptcha 다시 불러오기
           grecaptcha.reset();
           // noti 띄우기
@@ -159,30 +159,28 @@ export default {
             // check reCAPTCHA
             // grecaptcha.getResponse() : reCAPTCHA 가 만들어낸 code. 서버에서 검증
             // 여러 개의 폼을 검증 할 경우 () 안에 key 값 적어준다. 안적으면 첫번재 리캡챠만 가능.
-            const recap_code = grecaptcha.getResponse();
+            const recaptchaToken = grecaptcha.getResponse();
 
-            // recap_code 가 string 으로 나음.
-            if(recap_code === "") {
+            // getResponse() 가 없으면 "" (비어있는 스트링) 으로 준다!!!
+            if(recaptchaToken === "") {
                 this.noRecaptchaError();
                 return;
             }
 
-            // SUCCESS
-            // START API CALL
-            API.addApplicant(this.formRegister, recap_code)
-            .then((res) => {
-                if(res.status === 200){
-                    // 받아 온 토큰과 applicantID를 vuex 에 넣어야 함.
-                    // Redirect to 'applicant status page' (가제)
-                    console.log('success!! \n Email : ', res.config.data,'\n RESDATA: ', res.data.data);
-                };
-            })
+            this.$store.dispatch('createApplicant', {userInfo : this.userInfo, recaptchaToken})
+            .then((res)=> {
+                    // Store에 토큰하고 applicantIdx 저장까지 된 회원 가입 성공 시
+                    // 작성 페이지로 redirect 할 예정
+                    // 현재 로그인 후 초기 화면으로 잘 가는지 테스트. 나중에 변경해야 함
+                    this.$router.push({ name: 'intro'});
+                })
             .catch((e) => {
-                // 중요!!! 에러 핸들링 하기 위해선 e.response.data 를 까보면 알 수 있다.
-                // 400 대로 오면 여기로 오는 듯
-                const err = e.response.data;
-                if(err.msg === "User Already Exists") { this.emailDuplicatedError(); }
-            });
+                if (e === 'duplicated') {
+                    this.emailDuplicatedError();
+                } else {
+                    console.log('something failed : ', e);
+                }
+            })
         })
       },
     }
