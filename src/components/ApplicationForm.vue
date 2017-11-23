@@ -6,7 +6,7 @@
                 <h3 class="wrapper-title">기본 인적사항</h3>
                 <div id="basic-info-box" class="box">
                     <el-form :model="basicInfoForm" ref="basicInfoForm" :rules="rules">
-                        <el-form-item id="name" prop="name">
+                        <el-form-item id="name">
                             <el-input v-model="basicInfoForm.name" placeholder="이름"></el-input>
                         </el-form-item>
                         <el-form-item id="gender" class="selector">
@@ -15,13 +15,13 @@
                                 <el-option label="여자" value="female"></el-option>
                             </el-select>
                         </el-form-item>
-                        <el-form-item id="birth" class="half endcol" prop="birth">
+                        <el-form-item id="birth" class="half endcol">
                             <el-input v-model="basicInfoForm.birth" placeholder="생년월일 (예: 950222)"></el-input>
                         </el-form-item>
                         <el-form-item id="residence" class="half">
                             <el-input v-model="basicInfoForm.residence" placeholder="현 거주지 (시/도, 군/구)"></el-input>
                         </el-form-item>
-                        <el-form-item id="phone" class="half endcol" prop="birth">
+                        <el-form-item id="phone" class="half endcol">
                             <el-input v-model="basicInfoForm.phone" placeholder="휴대전화 ( - 없이 입력)"></el-input>
                         </el-form-item>
                         <el-form-item id="job" class="selector">
@@ -31,10 +31,10 @@
                                 <el-option label="기타" value="guitar"></el-option>
                             </el-select>
                         </el-form-item>
-                        <el-form-item id="company" prop="company">
+                        <el-form-item id="company">
                             <el-input v-model="basicInfoForm.company" placeholder="학교명 또는 직장명"></el-input>
                         </el-form-item>
-                        <el-form-item id="work" class="endcol" prop="work">
+                        <el-form-item id="work" class="endcol">
                             <el-input v-model="basicInfoForm.work" placeholder="전공 또는 직무"></el-input>
                         </el-form-item>
                         <el-form-item id="position" class="selector">
@@ -43,10 +43,10 @@
                                 <el-option label="개발자" value="developer"></el-option>
                             </el-select>
                         </el-form-item>
-                        <el-form-item id="knownFrom" class="endcol" prop="knownFrom">
+                        <el-form-item id="knownFrom" class="endcol">
                             <el-input v-model="basicInfoForm.knownFrom" placeholder="모집 공고를 어디서 보았나요?"></el-input>
                         </el-form-item>
-                        <el-form-item id="personalUrl" class="full endcol" prop="personalUrl">
+                        <el-form-item id="personalUrl" class="full endcol">
                             <el-input v-model="basicInfoForm.personalUrl" placeholder="(선택) 블로그 or Github or 홈페이지 URL"></el-input>
                         </el-form-item>
                     </el-form>
@@ -125,8 +125,16 @@ export default {
     name: 'applicationForm',
     components : { vHeader },
     data(){
+        // const checkNumber = (rule, value, cb) => {
+        //     const num = parseInt(value);
+        //     if (num !== NaN &&  num>0) {
+        //         cb();
+        //     } else {
+        //         cb(new Error('올바른 숫자로 입력해 주세요.'));
+        //     }
+        // };
         return {
-            season : '4',
+            season : '',
             imageUrl : "",
             portfolioUrl: "",
             questions : [],
@@ -146,9 +154,6 @@ export default {
                 knownFrom:"",
                 personalUrl:"",
             },
-            rules: {
-
-            }
         }
     },
     computed: {
@@ -169,6 +174,7 @@ export default {
             {date: '11/25/토', times: ['14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30']},
             {date: '11/26/일', times: ['14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30']},
         ]
+        this.season = '4'
         // API call 해서 Axios 로 가져와야 함.
         //        this.$axios.get('http://127.0.0.1:8003/api/test').then((response) => {
         //            console.log(response.body);
@@ -178,12 +184,6 @@ export default {
         //        });
     },
     methods: {
-        helloworld(it){
-            // 블러 이벤트 발생 시 this.questions.answer 를 업데이트 하도록.
-            // 이걸론 좀 부족한 것 같고... debounce 로 자동저장하는게 적절할듯..
-            // _.debounce( function () )...
-            console.log('blurblurblur hello world!!');
-        },
         handleAvatarSuccess(res, file) {
             this.$notify({
                 title: "성공!",

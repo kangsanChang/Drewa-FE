@@ -1,6 +1,6 @@
 <template>
     <div id="container">
-        <el-col :span="14" :offset="5" id="contents">
+        <div id="contents-wrapper">
             <v-header title="개인정보 수집 및 이용에 대한 안내"></v-header>
             <main id="content-body">
                 <div id="privacy-policy-wrapper">
@@ -15,31 +15,29 @@
                     </div>
                 </div>
                 <hr>
-                <el-col :span="14" :offset="5">
-                    <div id="register-box">
-                        <h3>신규 지원자 등록</h3>
-                        <span>지원서 작성을 위해 아래 정보를 입력해 주세요.</span>
-                        <el-form id="register-form" :model="userInfo" status-icon :rules="rules" ref="userInfo">
-                            <el-form-item prop="email">
-                                <el-input type="text" placeholder="이메일" v-model="userInfo.email"></el-input>
-                            </el-form-item>
-                            <el-form-item prop="password">
-                                <el-input type="password" placeholder="비밀번호 (영문+숫자 8자이상)" v-model="userInfo.password"></el-input>
-                            </el-form-item>
-                            <el-form-item prop="confirm_password">
-                                <el-input type="password" placeholder="비밀번호 재입력" v-model="userInfo.confirm_password"></el-input>
-                            </el-form-item>
-                            <el-form-item>
-                                <div class="g-recaptcha" :data-sitekey="recaptchaSiteKey" align="center"></div>
-                            </el-form-item>
-                            <el-form-item id="submit-box">
-                                <el-button id="submit" @click="submitForm('userInfo')">완료</el-button>
-                            </el-form-item>
-                        </el-form>
-                    </div>
-                </el-col>
+                <div id="register-box">
+                    <h3>신규 지원자 등록</h3>
+                    <span>지원서 작성을 위해 아래 정보를 입력해 주세요.</span>
+                    <el-form id="register-form" :model="userInfo" status-icon :rules="rules" ref="userInfo">
+                        <el-form-item prop="email">
+                            <el-input type="text" placeholder="이메일" v-model="userInfo.email"></el-input>
+                        </el-form-item>
+                        <el-form-item prop="password">
+                            <el-input type="password" placeholder="비밀번호 (영문+숫자 8자이상)" v-model="userInfo.password"></el-input>
+                        </el-form-item>
+                        <el-form-item prop="confirm_password">
+                            <el-input type="password" placeholder="비밀번호 재입력" v-model="userInfo.confirm_password"></el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <div class="g-recaptcha" :data-sitekey="recaptchaSiteKey" align="center"></div>
+                        </el-form-item>
+                        <el-form-item id="submit-box">
+                            <el-button id="submit" @click="submitForm('userInfo')">완료</el-button>
+                        </el-form-item>
+                    </el-form>
+                </div>
             </main>
-        </el-col>
+        </div>
     </div>
 </template>
 
@@ -241,8 +239,10 @@ hr {
     padding: 0 30px;
 }
 
-#contents {
+#contents-wrapper {
     background-color: white;
+    margin: auto;
+    width: 750px;
 }
 
 #privacy-policy-box {
@@ -295,8 +295,7 @@ hr {
 }
 
 #register-box {
-    max-width: 300px;
-    text-align: center;
+    max-width: 350px;
     margin: 0 auto;
 
     h3 {

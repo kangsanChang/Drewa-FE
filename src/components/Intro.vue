@@ -1,11 +1,11 @@
 <template>
   <div id="container">
-    <el-col :span="12" :offset="6">
+    <div id="contents-wrapper">
         <div id="poster">
             <img src="../assets/depromeet-poster3.jpg">
         </div>
-        <el-row id="notice-wrapper">
-            <el-col :span="16" :offset="4">
+        <div id="notice-wrapper">
+            <div id="notice-box">
                 <div id="title">
                     <h2>{{ title }}</h2>
                 </div>
@@ -17,10 +17,10 @@
                         <router-link to="/login" class="button" id="find-btn">지원서 조회</router-link>
                         <a href="/join" class="button" id="create-btn">신규 작성</a>
                     </div>
-                </div>
-            </el-col>
-        </el-row>
-    </el-col>
+                </div>                    
+            </div>
+        </div>
+    </div>
   </div>
 </template>
 
@@ -31,7 +31,7 @@ export default {
   name: 'intro',
   data () {
     return {
-      title: '디프만 3기 회원을 모집합니다',
+      title: '디프만 4기 회원을 모집합니다',
       description : Config.DESCRIPTION,
     }
   }
@@ -42,13 +42,22 @@ export default {
 #container {
     /* auto 로 해야 크기 변화에 따라가면서 비율(grid offset = > 중앙) 유지 */
     margin: auto;
-    max-width: 1250px;
-    min-width: 800px;
+    width: 700px;
 }
 
 #notice-wrapper {
   background-color: white;
   padding: 30px 0;
+
+  #notice-box {
+      width: 400px;
+      margin: auto;
+  }
+}
+
+#contents-wrapper {
+    margin: auto;
+    width: 700px;
 }
 
 #title {
