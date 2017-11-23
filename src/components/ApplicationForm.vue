@@ -53,7 +53,8 @@
                 </div>
                 <div id="photo-box">
                     <div id="photo-upload-box" class="box">
-                        <el-upload 
+                        <el-upload
+                        name="user_image"
                         class="avatar-uploader" 
                         :action="pictureUploadUrl" 
                         :show-file-list="false" 
@@ -85,13 +86,12 @@
                 <span class="subtitle">(선택) 추가 자료나 포트폴리오를 첨부해 주세요.</span>
                 <div id="portfolio-upload-box">
                     <el-upload
+                    name="user_portfolio"
                     class="upload-portfolio"
-                    action="https://jsonplaceholder.typicode.com/posts/"
+                    :action="portfolioUploadUrl"
+                    :before-upload="beforeFileUpload"
+                    :on-success="handleFileSuccess"
                     >
-                    <!-- :on-preview="handlePreview"
-                    :on-remove="handleRemove"
-                    :on-exceed="handleExceed"
-                    :file-list="fileList" -->
                     <el-button size="small" type="primary">파일 업로드</el-button>
                     <div slot="tip" class="el-upload__tip">30MB 이하의 PDF파일</div>
                     </el-upload>
@@ -106,6 +106,10 @@
                         <el-checkbox v-for="(time, index) in interviewDay.times" :key="index" :label="interviewDay.date+'-'+time" border>{{time}}</el-checkbox>
                     </el-checkbox-group>
                 </div>
+            </div>
+            <div id="submit-box" align="center">
+                <button id="save">임시 저장</button>
+                <button id="submit">최종 제출</button>
             </div>
         </div>
     </div>
@@ -124,6 +128,7 @@ export default {
         return {
             season : '4',
             imageUrl : "",
+            portfolioUrl: "",
             questions : [],
             answers : [],
             interviewTimes : [],
@@ -180,25 +185,56 @@ export default {
             console.log('blurblurblur hello world!!');
         },
         handleAvatarSuccess(res, file) {
+            this.$notify({
+                title: "성공!",
+                message: "정상적으로 사진을 업로드 하였습니다.",
+                type:"success"
+            })
             this.imageUrl = URL.createObjectURL(file.raw);
         },
         beforeAvatarUpload(file) {
-            const isImage = file.type === ('image/jpeg' || 'image/png');
+            const isImage = file.type === 'image/jpeg' || file.type === 'image/png';
             const isLt3M = file.size / 1024 / 1024 < 3;
 
             if (!isImage) {
                 this.$notify.error({
-                    title: '이미지 형식 오류!',
+                    title: '잘못 된 형식!',
                     message: '프로필 사진은 jpg 또는 png 확장자여야 합니다.'
                 });
             }
             if (!isLt3M) {
                 this.$notify.error({
-                    title: '이미지 크기 오류!',
+                    title: '너무 큰 파일!',
                     message: '이미지는 3MB 이하여야 합니다.'
                 });
             }
             return isImage && isLt3M;
+        },
+        handleFileSuccess(res, file) {
+            this.$notify({
+                title: "성공!",
+                message: "정상적으로 파일을 업로드 하였습니다.",
+                type:"success"
+            })
+            this.portfolioUrl = URL.createObjectURL(file.raw);
+        },
+        beforeFileUpload(file) {
+            const isPdf = file.type === 'application/pdf';
+            const isLt30M = file.size / 1024 / 1024 < 30;
+
+            if (!isPdf) {
+                this.$notify.error({
+                    title: '잘못 된 형식!',
+                    message: '파일은 pdf 확장자여야 합니다.'
+                });
+            }
+            if (!isLt30M) {
+                this.$notify.error({
+                    title: '너무 큰 파일!',
+                    message: '파일은 30MB 이하여야 합니다.'
+                });
+            }
+            return isPdf && isLt30M;
         }
     },
 }
@@ -351,9 +387,36 @@ export default {
         .el-checkbox {
             margin: 0 10px 10px 0;
         }
-        .el-checkbox.is-checked {
-            border-color: black;
-            color: black;
+    }
+}
+
+#submit-box {
+    margin: 60px 0;
+    button {
+        width: 100px;
+        height: 40px;
+        border: 1px solid #2b2b2b;
+        font-size: 14px;
+        border-radius: 3px;
+
+        &:hover{
+            cursor: pointer;
+            background-color: gray !important;
+        }
+
+        &:focus {
+            outline: none;
+        }
+
+        &#save {
+            background-color: white;
+            color: #2b2b2b;
+            margin-right: 10px;
+        }
+
+        &#submit {
+            background-color: #2b2b2b;
+            color: white;
         }
     }
 }
