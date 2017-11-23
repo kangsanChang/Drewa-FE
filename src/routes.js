@@ -4,8 +4,24 @@ import Intro from './components/Intro.vue'
 import Join from './components/Join.vue'
 import Form from './components/ApplicationForm.vue'
 
+import store from './store'
+
 export const routes = [
     { path: '/', name: 'intro', component: Intro },
     { path: '/join', name: 'join', component: Join },
-    { path: '/application', name: 'application', component: Form }, // 동적 라우팅 필요.
+    { path: '/application', name: 'application', component: Form , beforeEnter: checkToken },
 ]
+
+// es6 arrow function 스타일로 적으면 안먹힘!!
+// 궁금한점 :
+// check Token 으로 토큰이 존재하는지만 확인 함.
+// 이래도 되는지? API 요청 시에는 token header 에 담아서 보내긴 함.
+function checkToken(to, from, next){
+    // local storage 에 있는지도 확인해야 함.
+    if(store.state.token === "") {
+        alert('지원자 로그인 후 이용하시기 바랍니다.');
+        next('/')
+    }else{
+        next();
+    }
+}

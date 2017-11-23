@@ -5,7 +5,7 @@
             <div id="basic-info-wrapper" class="wrapper">
                 <h3 class="wrapper-title">기본 인적사항</h3>
                 <div id="basic-info-box" class="box">
-                    <el-form :model="basicInfoForm" ref="basicInfoForm" :rules="rules">
+                    <el-form :model="basicInfoForm">
                         <el-form-item id="name">
                             <el-input v-model="basicInfoForm.name" placeholder="이름"></el-input>
                         </el-form-item>
