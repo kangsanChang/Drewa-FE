@@ -6,7 +6,8 @@ export default {
             API.addApplicant(payload.userInfo, payload.recaptchaToken)
                 .then((res) => {
                     // resolve
-                    const commitData = { token: res.data.data.token, applicantIdx: res.data.data.applicantIdx };
+                    const data = res.data.data;
+                    const commitData = { token: data.token, applicantIdx: data.applicantIdx };
                     store.commit('createApplicant', commitData);
                     resolve();
                 })
@@ -17,8 +18,35 @@ export default {
                     if (err.msg === "User Already Exists") { 
                        reject('duplicated');
                     }
+                    console.log('error occour in action ', e)
                     reject('fail');
                 });
         })
     },
+    'getApplicantData' : (store) => {
+        return new Promise((resolve, reject) => {
+            API.getApplicantData(store.state.applicantIdx, store.state.token)
+            .then((res) => {
+                const data = res.data.data;
+                resolve(data)
+            })
+            .catch((e)=> {
+                console.log('error in actions promise reject, getAPplicantData');
+                reject(e);
+            })
+        })
+    },
+    'postApplicantData' : (store, payload) => {
+        return new Promise((resolve, reject) => {
+            API.postApplicantData(store.state.applicantIdx, store.state.token, payload.userFormData)
+            .then((res) => {
+                const data = res.data.data;
+                resolve('Application saved successfully!')
+            })
+            .catch((e) => {
+                console.log('error in action promise reject, postApplicantData');
+                reject(e);
+            })
+        })
+    }
 };

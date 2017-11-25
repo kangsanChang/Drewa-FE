@@ -5,49 +5,49 @@
             <div id="basic-info-wrapper" class="wrapper">
                 <h3 class="wrapper-title">기본 인적사항</h3>
                 <div id="basic-info-box" class="box">
-                    <el-form :model="basicInfoForm">
+                    <el-form :model="userFormData">
                         <el-form-item id="name">
-                            <el-input v-model="basicInfoForm.name" placeholder="이름"></el-input>
+                            <el-input v-model="userFormData.name" placeholder="이름"></el-input>
                         </el-form-item>
                         <el-form-item id="gender" class="selector">
-                            <el-select v-model="basicInfoForm.gender" placeholder="성별">
-                                <el-option label="남자" value="male"></el-option>
-                                <el-option label="여자" value="female"></el-option>
+                            <el-select v-model="userFormData.gender" placeholder="성별">
+                                <el-option label="남자" value="M"></el-option>
+                                <el-option label="여자" value="F"></el-option>
                             </el-select>
                         </el-form-item>
                         <el-form-item id="birth" class="half endcol">
-                            <el-input v-model="basicInfoForm.birth" placeholder="생년월일 (예: 950222)"></el-input>
+                            <el-input v-model="userFormData.birth" placeholder="생년월일 (예: 950222)"></el-input>
                         </el-form-item>
                         <el-form-item id="residence" class="half">
-                            <el-input v-model="basicInfoForm.residence" placeholder="현 거주지 (시/도, 군/구)"></el-input>
+                            <el-input v-model="userFormData.residence" placeholder="현 거주지 (시/도, 군/구)"></el-input>
                         </el-form-item>
                         <el-form-item id="phone" class="half endcol">
-                            <el-input v-model="basicInfoForm.phone" placeholder="휴대전화 ( - 없이 입력)"></el-input>
+                            <el-input v-model="userFormData.phone" placeholder="휴대전화 ( - 없이 입력)"></el-input>
                         </el-form-item>
                         <el-form-item id="job" class="selector">
-                            <el-select v-model="basicInfoForm.job" placeholder="직업">
+                            <el-select v-model="userFormData.job" placeholder="직업">
                                 <el-option label="학생" value="student"></el-option>
                                 <el-option label="직장인" value="worker"></el-option>
                                 <el-option label="기타" value="guitar"></el-option>
                             </el-select>
                         </el-form-item>
                         <el-form-item id="company">
-                            <el-input v-model="basicInfoForm.company" placeholder="학교명 또는 직장명"></el-input>
+                            <el-input v-model="userFormData.company" placeholder="학교명 또는 직장명"></el-input>
                         </el-form-item>
-                        <el-form-item id="work" class="endcol">
-                            <el-input v-model="basicInfoForm.work" placeholder="전공 또는 직무"></el-input>
+                        <el-form-item id="major" class="endcol">
+                            <el-input v-model="userFormData.major" placeholder="전공 또는 직무"></el-input>
                         </el-form-item>
                         <el-form-item id="position" class="selector">
-                            <el-select v-model="basicInfoForm.position" placeholder="지원분야">
+                            <el-select v-model="userFormData.position" placeholder="지원분야">
                                 <el-option label="디자이너" value="designer"></el-option>
                                 <el-option label="개발자" value="developer"></el-option>
                             </el-select>
                         </el-form-item>
                         <el-form-item id="knownFrom" class="endcol">
-                            <el-input v-model="basicInfoForm.knownFrom" placeholder="모집 공고를 어디서 보았나요?"></el-input>
+                            <el-input v-model="userFormData.knownFrom" placeholder="모집 공고를 어디서 보았나요?"></el-input>
                         </el-form-item>
                         <el-form-item id="personalUrl" class="full endcol">
-                            <el-input v-model="basicInfoForm.personalUrl" placeholder="(선택) 블로그 or Github or 홈페이지 URL"></el-input>
+                            <el-input v-model="userFormData.personalUrl" placeholder="(선택) 블로그 or Github or 홈페이지 URL"></el-input>
                         </el-form-item>
                     </el-form>
                 </div>
@@ -60,7 +60,7 @@
                         :show-file-list="false" 
                         :on-success="handleAvatarSuccess" 
                         :before-upload="beforeAvatarUpload">
-                        <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                        <img v-if="userFormData.applicantimageUrl" :src="userFormData.applicantimageUrl" class="avatar">
                         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                         </el-upload>
                     </div>
@@ -69,13 +69,13 @@
             </div>
             <div id="cover-letter-wrapper" class="wrapper">
                 <h3 class="wrapper-title">자기소개서</h3>
-                <div v-for="(question, index) in questions" :key="index" class="text-box">
+                <div v-for="(question, index) in setApplicationData.questions" :key="index" class="text-box">
                     <h4 class="title">{{index + 1}}. {{ question }}</h4>
                     <el-input
                     type="textarea"
                     resize="none"
                     :rows="15"
-                    v-model="answers[index]"
+                    v-model="userFormData.answers[index]"
                     >
                     <!-- 필요하면 @blur attribute 사용 -->
                     </el-input>
@@ -100,15 +100,15 @@
             <div id="interview-time-wrapper" class="wrapper">
                 <h3 class="wrapper-title">면접 시간 선택</h3>
                 <span class="subtitle">면접 가능한 시간을 모두 선택해 주세요.</span>
-                <div v-for="(interviewDay, index) in interviewTimes" :key="index" class="interview-select-box">
+                <div v-for="(interviewDay, index) in setApplicationData.interviewTimes" :key="index" class="interview-select-box">
                     <span>{{interviewDay.date}}</span>
-                    <el-checkbox-group v-model="interviewAvaliableTimes">
+                    <el-checkbox-group v-model="userFormData.interviewAvailableTimes">
                         <el-checkbox v-for="(time, index) in interviewDay.times" :key="index" :label="interviewDay.date+'-'+time" border>{{time}}</el-checkbox>
                     </el-checkbox-group>
                 </div>
             </div>
             <div id="submit-box" align="center">
-                <button id="save">임시 저장</button>
+                <button id="save" @click="saveApplication">임시 저장</button>
                 <button id="submit">최종 제출</button>
             </div>
         </div>
@@ -133,15 +133,15 @@ export default {
         //         cb(new Error('올바른 숫자로 입력해 주세요.'));
         //     }
         // };
+
+        // 이미지나 포폴 주소는 S3에 직접 url 만들어서 서치 때리면 됨
         return {
-            season : '',
-            imageUrl : "",
-            portfolioUrl: "",
-            questions : [],
-            answers : [],
-            interviewTimes : [],
-            interviewAvaliableTimes : [],
-            basicInfoForm: {
+            setApplicationData: {
+                season : '',
+                questions : [],
+                interviewTimes : [],
+            },
+            userFormData: {
                 name:"",
                 gender:"",
                 birth:"",
@@ -149,16 +149,22 @@ export default {
                 phone:"",
                 job:"",
                 company:"",
-                work:"",
+                major:"",
                 position:"",
                 knownFrom:"",
                 personalUrl:"",
+                pictureFilename:"",
+                portfolioFilename:"",
+                applicantImageUrl: "",
+                applicantPortfolioUrl: "",
+                answers : [],
+                interviewAvailableTimes : [],
             },
         }
     },
     computed: {
         title() {
-            return `디프만 ${this.season}기 지원서 작성하기`
+            return `디프만 ${this.setApplicationData.season}기 지원서 작성하기`
         },
         pictureUploadUrl() {
             return `/applicants/${ this.$store.state.applicantIdx }/application/picture`
@@ -168,29 +174,36 @@ export default {
         }
     },
     mounted(){
-        this.questions = ['지원 동기', '협업 경험', '기억에 남는 프로젝트', '좋아하는 서비스',],
-        this.answers = ["지원 동기 입니다 동기동기","협업 경험 입니다 협업협업","기억에 남는 프로젝트","좋아하는 서비스으으"],
-        this.interviewTimes = [
+        // Axios 를 통한 API call 은 여기서 하면 된다.
+        this.setApplicationData.questions = ['지원 동기', '협업 경험', '기억에 남는 프로젝트', '좋아하는 서비스',],
+        this.userFormData.answers = ["지원 동기 입니다 동기동기","협업 경험 입니다 협업협업","기억에 남는 프로젝트","좋아하는 서비스으으"],
+        this.setApplicationData.interviewTimes = [
             {date: '11/25/토', times: ['14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30']},
             {date: '11/26/일', times: ['14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30']},
         ]
-        this.season = '4'
-        // API call 해서 Axios 로 가져와야 함.
-        //        this.$axios.get('http://127.0.0.1:8003/api/test').then((response) => {
-        //            console.log(response.body);
-        //            this.users = response.body;
-        //        }, function() {
-        //            alert('hi');
-        //        });
+        this.setApplicationData.season = '4'
+        this.$store.dispatch('getApplicantData')
+        .then((res) => {
+            // 서버에서 가져온 setApplicationData 를 바인딩 해야 함
+            
+            // 서버에서 가져온 내 지원서를 바인딩.
+            this.userFormData = res;
+        })
+        .catch((e) => {
+            console.log('error occured in dispatch\n', e);
+        })
     },
     methods: {
+        saveApplication() {
+            this.$store.dispatch('postApplicantData', { userFormData: this.userFormData });
+        },
         handleAvatarSuccess(res, file) {
             this.$notify({
                 title: "성공!",
                 message: "정상적으로 사진을 업로드 하였습니다.",
                 type:"success"
             })
-            this.imageUrl = URL.createObjectURL(file.raw);
+            this.userFormData.applicantimageUrl = URL.createObjectURL(file.raw);
         },
         beforeAvatarUpload(file) {
             const isImage = file.type === 'image/jpeg' || file.type === 'image/png';
@@ -216,7 +229,7 @@ export default {
                 message: "정상적으로 파일을 업로드 하였습니다.",
                 type:"success"
             })
-            this.portfolioUrl = URL.createObjectURL(file.raw);
+            this.userFormData.applicantPortfolioUrl = URL.createObjectURL(file.raw);
         },
         beforeFileUpload(file) {
             const isPdf = file.type === 'application/pdf';
@@ -289,7 +302,7 @@ export default {
             &#company {
                 width: 190px;
             }
-            &#work {
+            &#major {
                 width: 230px;
             }
             &#knownFrom {
