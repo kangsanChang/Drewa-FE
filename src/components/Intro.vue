@@ -61,10 +61,11 @@ export default {
 }
 
 #title {
-  text-align: center;
-  h2 {
-      margin-top: 0px;
-  }
+    margin: 20px 0 30px 0;
+    text-align: center;
+    h2 {
+        margin-top: 0px;
+    }
 }
 
 #poster img {

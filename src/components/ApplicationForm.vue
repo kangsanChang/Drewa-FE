@@ -24,17 +24,10 @@
                         <el-form-item id="phone" class="half endcol">
                             <el-input v-model="userFormData.phone" placeholder="휴대전화 ( - 없이 입력)"></el-input>
                         </el-form-item>
-                        <el-form-item id="job" class="selector">
-                            <el-select v-model="userFormData.job" placeholder="직업">
-                                <el-option label="학생" value="student"></el-option>
-                                <el-option label="직장인" value="worker"></el-option>
-                                <el-option label="기타" value="guitar"></el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item id="company">
+                        <el-form-item id="company" class="half">
                             <el-input v-model="userFormData.company" placeholder="학교명 또는 직장명"></el-input>
                         </el-form-item>
-                        <el-form-item id="major" class="endcol">
+                        <el-form-item id="major" class="half endcol">
                             <el-input v-model="userFormData.major" placeholder="전공 또는 직무"></el-input>
                         </el-form-item>
                         <el-form-item id="position" class="selector">
@@ -88,10 +81,11 @@
                     <el-upload
                     name="user_portfolio"
                     class="upload-portfolio"
-                    :action="portfolioUploadUrl"
+                    action="https://jsonplaceholder.typicode.com"
                     :before-upload="beforeFileUpload"
                     :on-success="handleFileSuccess"
                     >
+                    <!-- :action="portfolioUploadUrl" -->
                     <el-button size="small" type="primary">파일 업로드</el-button>
                     <div slot="tip" class="el-upload__tip">30MB 이하의 PDF파일</div>
                     </el-upload>
@@ -99,7 +93,7 @@
             </div>
             <div id="interview-time-wrapper" class="wrapper">
                 <h3 class="wrapper-title">면접 시간 선택</h3>
-                <span class="subtitle">면접 가능한 시간을 모두 선택해 주세요.</span>
+                <span class="subtitle">면접 가능한 시간을 <u>모두</u> 선택해 주세요.</span>
                 <div v-for="(interviewDay, index) in setApplicationData.interviewTimes" :key="index" class="interview-select-box">
                     <span>{{interviewDay.date}}</span>
                     <el-checkbox-group v-model="userFormData.interviewAvailableTimes">
@@ -147,7 +141,6 @@ export default {
                 birth:"",
                 residence:"",
                 phone:"",
-                job:"",
                 company:"",
                 major:"",
                 position:"",
@@ -178,8 +171,8 @@ export default {
         this.setApplicationData.questions = ['지원 동기', '협업 경험', '기억에 남는 프로젝트', '좋아하는 서비스',],
         this.userFormData.answers = ["지원 동기 입니다 동기동기","협업 경험 입니다 협업협업","기억에 남는 프로젝트","좋아하는 서비스으으"],
         this.setApplicationData.interviewTimes = [
-            {date: '11/25/토', times: ['14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30']},
-            {date: '11/26/일', times: ['14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30']},
+            {date: '11/25 (토)', times: ['14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30']},
+            {date: '11/26 (일)', times: ['14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30']},
         ]
         this.setApplicationData.season = '4'
         this.$store.dispatch('getApplicantData')
@@ -196,11 +189,16 @@ export default {
     methods: {
         saveApplication() {
             this.$store.dispatch('postApplicantData', { userFormData: this.userFormData });
+            this.$notify({
+                title: "성공!",
+                message: "지원서를 저장하였습니다.",
+                type:"success"
+            })
         },
         handleAvatarSuccess(res, file) {
             this.$notify({
                 title: "성공!",
-                message: "정상적으로 사진을 업로드 하였습니다.",
+                message: "정상적으로 사진을 업로드하였습니다.",
                 type:"success"
             })
             this.userFormData.applicantimageUrl = URL.createObjectURL(file.raw);
@@ -226,7 +224,7 @@ export default {
         handleFileSuccess(res, file) {
             this.$notify({
                 title: "성공!",
-                message: "정상적으로 파일을 업로드 하였습니다.",
+                message: "정상적으로 파일을 업로드하였습니다.",
                 type:"success"
             })
             this.userFormData.applicantPortfolioUrl = URL.createObjectURL(file.raw);
@@ -278,9 +276,13 @@ export default {
     .wrapper-title {
         margin: 0 0 25px 0;
     }
+
     span.subtitle {
         font-size: 13px;
         color: #a6a6a6;
+        u {
+            color: #FF8E7F;
+        }
     }
 }
 
@@ -295,15 +297,15 @@ export default {
             display: inline-block;
             float: left; // inline-block 의 기본 margin (잡히지도 않음) 을 제거하기 위함.
 
+            .el-form-item__content .el-input {
+                input {
+                    border: 1px solid #a6a6a6;
+                }
+            }
+            
             // Customize input size
             &#name {
                 width: 150px;
-            }
-            &#company {
-                width: 190px;
-            }
-            &#major {
-                width: 230px;
             }
             &#knownFrom {
                 width: 430px;
@@ -337,7 +339,7 @@ export default {
         margin-bottom: 8px;
         float: right;
         display: inline-block;
-        background-color: gray;
+        background-color: #c4c4c4;
         border-radius: 10px;
 
         .avatar-uploader-icon {
