@@ -25,10 +25,10 @@
                             <el-input v-model="userFormData.phone" placeholder="휴대전화 ( - 없이 입력)"></el-input>
                         </el-form-item>
                         <el-form-item id="company" class="half">
-                            <el-input v-model="userFormData.company" placeholder="학교명 또는 직장명"></el-input>
+                            <el-input v-model="userFormData.company" placeholder="소속"></el-input>
                         </el-form-item>
                         <el-form-item id="major" class="half endcol">
-                            <el-input v-model="userFormData.major" placeholder="전공 또는 직무"></el-input>
+                            <el-input v-model="userFormData.major" placeholder="전공"></el-input>
                         </el-form-item>
                         <el-form-item id="position" class="selector">
                             <el-select v-model="userFormData.position" placeholder="지원분야">
@@ -40,7 +40,7 @@
                             <el-input v-model="userFormData.knownFrom" placeholder="모집 공고를 어디서 보았나요?"></el-input>
                         </el-form-item>
                         <el-form-item id="personalUrl" class="full endcol">
-                            <el-input v-model="userFormData.personalUrl" placeholder="(선택) 블로그 or Github or 홈페이지 URL"></el-input>
+                            <el-input v-model="userFormData.personalUrl" placeholder="(선택사항) 블로그 or GitHub or 홈페이지 URL"></el-input>
                         </el-form-item>
                     </el-form>
                 </div>
@@ -48,16 +48,17 @@
                     <div id="photo-upload-box" class="box">
                         <el-upload
                         name="user_image"
-                        class="avatar-uploader" 
-                        :action="pictureUploadUrl" 
-                        :show-file-list="false" 
-                        :on-success="handleAvatarSuccess" 
-                        :before-upload="beforeAvatarUpload">
-                        <img v-if="userFormData.applicantimageUrl" :src="userFormData.applicantimageUrl" class="avatar">
+                        class="avatar-uploader"
+                        :headers="authorizationHeader"
+                        :action="pictureUploadUrl"
+                        :show-file-list="false"
+                        :on-success="uploadPictureSuccess"
+                        :before-upload="beforePictureUpload">
+                        <img v-if="userFormData.applicantImageUrl" :src="userFormData.applicantImageUrl" class="avatar">
                         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                         </el-upload>
                     </div>
-                    <div id="picture-upload-desc">프로필 사진<br>(jpg, png 최대 2MB)</div>
+                    <div id="picture-upload-desc">프로필 사진<br>(jpg, png 최대 3MB)</div>
                 </div>
             </div>
             <div id="cover-letter-wrapper" class="wrapper">
@@ -81,13 +82,15 @@
                     <el-upload
                     name="user_portfolio"
                     class="upload-portfolio"
-                    action="https://jsonplaceholder.typicode.com"
+                    :headers="authorizationHeader"
+                    :action="portfolioUploadUrl"
                     :before-upload="beforeFileUpload"
-                    :on-success="handleFileSuccess"
+                    :on-success="uploadFileSuccess"
+                    :limit = 1
+                    :on-exceed="handleFileLimitexceed"
                     >
-                    <!-- :action="portfolioUploadUrl" -->
                     <el-button size="small" type="primary">파일 업로드</el-button>
-                    <div slot="tip" class="el-upload__tip">30MB 이하의 PDF파일</div>
+                    <div slot="tip" class="el-upload__tip">15MB 이하의 PDF파일</div>
                     </el-upload>
                 </div>
             </div>
@@ -159,51 +162,39 @@ export default {
         title() {
             return `디프만 ${this.setApplicationData.season}기 지원서 작성하기`
         },
+        authorizationHeader() {
+            return { Authorization : 'Bearer '+this.$store.state.token }
+        },
         pictureUploadUrl() {
-            return `/applicants/${ this.$store.state.applicantIdx }/application/picture`
+            return `/api/applicants/${ this.$store.state.applicantIdx }/application/picture`
         },
         portfolioUploadUrl() {
-            return `/applicants/${ this.$store.state.applicantIdx }/application/portfolio`
+            return `/api/applicants/${ this.$store.state.applicantIdx }/application/portfolio`
         }
     },
     mounted(){
         // Axios 를 통한 API call 은 여기서 하면 된다.
         this.setApplicationData.questions = ['지원 동기', '협업 경험', '기억에 남는 프로젝트', '좋아하는 서비스',],
-        this.userFormData.answers = ["지원 동기 입니다 동기동기","협업 경험 입니다 협업협업","기억에 남는 프로젝트","좋아하는 서비스으으"],
         this.setApplicationData.interviewTimes = [
             {date: '11/25 (토)', times: ['14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30']},
             {date: '11/26 (일)', times: ['14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30']},
         ]
         this.setApplicationData.season = '4'
+
+        // 서버에서 가져온 setApplicationData 를 바인딩 해야 함
+
         this.$store.dispatch('getApplicantData')
         .then((res) => {
-            // 서버에서 가져온 setApplicationData 를 바인딩 해야 함
-            
             // 서버에서 가져온 내 지원서를 바인딩.
             this.userFormData = res;
         })
         .catch((e) => {
-            console.log('error occured in dispatch\n', e);
+            console.log('error occured in dispatch when getApplicantData\n', e);
         })
     },
     methods: {
-        saveApplication() {
-            this.$store.dispatch('postApplicantData', { userFormData: this.userFormData });
-            this.$notify({
-                title: "성공!",
-                message: "지원서를 저장하였습니다.",
-                type:"success"
-            })
-        },
-        handleAvatarSuccess(res, file) {
-            this.$notify({
-                title: "성공!",
-                message: "정상적으로 사진을 업로드하였습니다.",
-                type:"success"
-            })
-            this.userFormData.applicantimageUrl = URL.createObjectURL(file.raw);
-        },
-        beforeAvatarUpload(file) {
+        // Picture Upload handler
+        beforePictureUpload(file) {
             const isImage = file.type === 'image/jpeg' || file.type === 'image/png';
             const isLt3M = file.size / 1024 / 1024 < 3;
 
@@ -221,17 +212,19 @@ export default {
             }
             return isImage && isLt3M;
         },
-        handleFileSuccess(res, file) {
+        uploadPictureSuccess(res, file) {
             this.$notify({
                 title: "성공!",
-                message: "정상적으로 파일을 업로드하였습니다.",
+                message: "정상적으로 사진을 업로드하였습니다.",
                 type:"success"
             })
-            this.userFormData.applicantPortfolioUrl = URL.createObjectURL(file.raw);
+            this.userFormData.applicantImageUrl = res.data.url;
         },
+
+        // Portfolio Upload Handler
         beforeFileUpload(file) {
             const isPdf = file.type === 'application/pdf';
-            const isLt30M = file.size / 1024 / 1024 < 30;
+            const isLt15M = file.size / 1024 / 1024 < 15;
 
             if (!isPdf) {
                 this.$notify.error({
@@ -239,14 +232,38 @@ export default {
                     message: '파일은 pdf 확장자여야 합니다.'
                 });
             }
-            if (!isLt30M) {
+            if (!isLt15M) {
                 this.$notify.error({
                     title: '너무 큰 파일!',
-                    message: '파일은 30MB 이하여야 합니다.'
+                    message: '파일은 15MB 이하여야 합니다.'
                 });
             }
-            return isPdf && isLt30M;
-        }
+            return isPdf && isLt15M;
+        },
+        handleFileLimitexceed(files, fileList){
+            this.$notify.error({
+                title: '파일 개수 초과!',
+                message: '파일 업로드는 1개만 가능합니다.'
+            })
+        },
+        uploadFileSuccess(res, file) {
+            this.$notify({
+                title: "성공!",
+                message: "정상적으로 파일을 업로드하였습니다.",
+                type:"success"
+            })
+            this.userFormData.applicantPortfolioUrl = res.data.url;
+        },
+
+        // Save Application
+        saveApplication() {
+            this.$store.dispatch('postApplicantData', { userFormData: this.userFormData });
+            this.$notify({
+                title: "성공!",
+                message: "지원서를 저장하였습니다.",
+                type:"success"
+            })
+        },
     },
 }
 </script>
@@ -297,12 +314,6 @@ export default {
             display: inline-block;
             float: left; // inline-block 의 기본 margin (잡히지도 않음) 을 제거하기 위함.
 
-            .el-form-item__content .el-input {
-                input {
-                    border: 1px solid #a6a6a6;
-                }
-            }
-            
             // Customize input size
             &#name {
                 width: 150px;

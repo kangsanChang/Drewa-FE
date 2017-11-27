@@ -18,7 +18,7 @@ export default {
                     if (err.msg === "User Already Exists") { 
                        reject('duplicated');
                     }
-                    console.log('error occour in action ', e)
+                    console.log('error occour in action ', err)
                     reject('fail');
                 });
         })
