@@ -38,6 +38,8 @@ export default {
     // return axios.post(BASE_URL + `/applicants/${applicantIdx}/application`, userFormData);
     // 일단은 가능한 버전으로
     return axios.post(BASE_URL + `/applicants/${applicantIdx}/application`,{
+      userName: userFormData.name,
+      userPosition: userFormData.position,
       applicantGender: userFormData.gender ,
       applicantBirthday: userFormData.birth ,
       applicantLocation: userFormData.residence ,
