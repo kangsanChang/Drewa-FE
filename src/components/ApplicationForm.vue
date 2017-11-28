@@ -47,6 +47,7 @@
                 <div id="photo-box">
                     <div id="photo-upload-box" class="box">
                         <el-upload
+                        v-loading="picLoading"
                         name="user_image"
                         class="avatar-uploader"
                         :headers="authorizationHeader"
@@ -123,6 +124,8 @@ export default {
     components : { vHeader },
     data(){
         return {
+            picLoading: false,
+            fullscreenLoading: false,
             setApplicationData: {
                 season : '',
                 questions : [],
@@ -163,6 +166,10 @@ export default {
         }
     },
     mounted(){
+        const loading = this.$loading({
+            lock: true,
+            text: '로딩 중',
+        })
         // Axios 를 통한 API call 은 여기서 하면 된다.
         this.setApplicationData.questions = ['지원 동기', '협업 경험', '기억에 남는 프로젝트', '좋아하는 서비스',],
         this.setApplicationData.interviewTimes = [
@@ -177,9 +184,11 @@ export default {
         .then((res) => {
             // 서버에서 가져온 내 지원서를 바인딩.
             this.userFormData = res;
+            loading.close()
         })
         .catch((e) => {
             console.log('error occured in dispatch when getApplicantData\n', e);
+            loading.close()
         })
     },
     methods: {
@@ -187,18 +196,21 @@ export default {
         beforePictureUpload(file) {
             const isImage = file.type === 'image/jpeg' || file.type === 'image/png';
             const isLt3M = file.size / 1024 / 1024 < 3;
-
+            // spinner on
+            this.picLoading = true;
             if (!isImage) {
                 this.$notify.error({
                     title: '잘못 된 형식!',
                     message: '프로필 사진은 jpg 또는 png 확장자여야 합니다.'
                 });
+                this.picLoading = false;
             }
             if (!isLt3M) {
                 this.$notify.error({
                     title: '너무 큰 파일!',
                     message: '이미지는 3MB 이하여야 합니다.'
                 });
+                this.picLoading = false;
             }
             return isImage && isLt3M;
         },
@@ -209,6 +221,7 @@ export default {
                 type:"success"
             })
             this.userFormData.applicantImageUrl = res.data.url;
+            this.picLoading = false;
         },
 
         // Portfolio Upload Handler

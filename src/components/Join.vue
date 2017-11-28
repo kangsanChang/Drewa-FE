@@ -174,18 +174,27 @@ export default {
                 return;
             }
 
+            // Start Spinner
+            const loading = this.$loading({
+                lock: true,
+                text: '로딩 중',
+            });
             this.$store.dispatch('createApplicant', {userInfo : this.userInfo, recaptchaToken})
             .then((res)=> {
                     // Store에 토큰하고 applicantIdx 저장까지 된 회원 가입 성공 시
                     // 작성 페이지로 redirect 할 예정
                     // 현재 로그인 후 초기 화면으로 잘 가는지 테스트. 나중에 변경해야 함
                     this.$router.push({ name: 'application'});
+                    loading.close();
+                    this.$notify.success({title:'가입 완료', message:'가입이 성공적으로 완료 되었습니다.'})
                 })
             .catch((e) => {
                 if (e === 'duplicated') {
                     this.emailDuplicatedError();
+                    loading.close();
                 } else {
                     console.log('something failed : ', e);
+                    loading.close();
                 }
             })
         })
