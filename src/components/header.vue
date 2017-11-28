@@ -19,9 +19,8 @@ header {
     background-color: #2b2b2b;
     color: white;
     vertical-align: middle;
-    height: 64px;
+    height: 61px;
     padding-left: 30px;
-    font-size: 16px;
 
     .header-element {
         display: inline-block;
@@ -29,7 +28,7 @@ header {
         margin-bottom: 24px;
 
         span {
-            font-size: 1.2em;
+            font-size: 16px;
         }
     }
 }

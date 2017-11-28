@@ -2,8 +2,9 @@
 
 import Intro from './components/Intro.vue'
 import Join from './components/Join.vue'
-import Form from './components/ApplicationForm.vue'
 import Login from './components/Login.vue'
+import Status from './components/ApplicantStatus.vue'
+import Form from './components/ApplicationForm.vue'
 
 import store from './store'
 
@@ -11,6 +12,7 @@ export const routes = [
     { path: '/', name: 'intro', component: Intro },
     { path: '/join', name: 'join', component: Join },
     { path: '/login', name: 'login', component: Login },
+    { path: '/status', name: 'status', component: Status , beforeEnter: checkToken },
     { path: '/application', name: 'application', component: Form , beforeEnter: checkToken },
 ]
 

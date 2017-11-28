@@ -72,7 +72,7 @@ export default {
                         // 작성 페이지로 redirect 할 예정
                         // 현재 로그인 후 초기 화면으로 잘 가는지 테스트. 나중에 변경해야 함
                         this.$notify.success({title: '성공', message: '로그인에 성공 하였습니다.'})
-                        this.$router.push({ name: 'application'});
+                        this.$router.push({ name: 'status'});
                     })
                 .catch((e) => {
                     if (e.msg === 'Email not exist') {
