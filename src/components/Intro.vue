@@ -14,7 +14,7 @@
                 </div>
                 <div class="buttons-wrapper">
                     <div class="buttons">
-                        <router-link to="/login" class="button" id="find-btn">지원서 조회</router-link>
+                        <a href="/login" class="button" id="find-btn">지원서 조회</a>
                         <a href="/join" class="button" id="create-btn">신규 작성</a>
                     </div>
                 </div>                    
@@ -99,7 +99,6 @@ export default {
 
     /* a tag text underline 삭제 */
     text-decoration: none;
-
     padding: 14px 21px 14px 21px;
     font-size: 16px;
     border: 1px solid;

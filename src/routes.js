@@ -3,12 +3,14 @@
 import Intro from './components/Intro.vue'
 import Join from './components/Join.vue'
 import Form from './components/ApplicationForm.vue'
+import Login from './components/Login.vue'
 
 import store from './store'
 
 export const routes = [
     { path: '/', name: 'intro', component: Intro },
     { path: '/join', name: 'join', component: Join },
+    { path: '/login', name: 'login', component: Login },
     { path: '/application', name: 'application', component: Form , beforeEnter: checkToken },
 ]
 
@@ -21,7 +23,7 @@ function checkToken(to, from, next){
     if(store.state.token === "") {
         alert('지원자 로그인 후 이용하시기 바랍니다.');
         next('/')
-    }else{
+    } else {
         next();
     }
 }

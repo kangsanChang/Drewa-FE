@@ -1,5 +1,5 @@
 export default {
-    'createApplicant': (state, payload) => {
+    'createApplicantInfo': (state, payload) => {
         state.token = payload.token;
         state.applicantIdx = payload.applicantIdx;
     }

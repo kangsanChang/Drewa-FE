@@ -5,12 +5,21 @@ import axios from 'axios';
 const BASE_URL = '/api';
 
 export default {
+  // 지원자 가입
   addApplicant(user, recaptchaToken) {
       return axios.post(BASE_URL+'/applicants', {
          userEmail: user.email,
          userPassword: user.password,
          recaptchaToken
         });
+  },
+  // 지원자 로그인
+  applicantLogin(user, recaptchaToken) {
+    return axios.post(BASE_URL+'/login', {
+      userEmail: user.email,
+      userPassword: user.password,
+      recaptchaToken
+    });
   },
   // application 접근 시 마운트 전 필요한 데이터 (면접 시간, season, 기타등등 가져오기)
   getApplicationSetting() {

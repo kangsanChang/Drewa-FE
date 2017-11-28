@@ -8,7 +8,7 @@ export default {
                     // resolve
                     const data = res.data.data;
                     const commitData = { token: data.token, applicantIdx: data.applicantIdx };
-                    store.commit('createApplicant', commitData);
+                    store.commit('createApplicantInfo', commitData);
                     resolve();
                 })
                 .catch((e) => {
@@ -22,6 +22,21 @@ export default {
                     reject('fail');
                 });
         })
+    },
+    'loginApplicant': (store, payload) => {
+        return new Promise((resolve, reject) => {
+            API.applicantLogin(payload.loginForm, payload.recaptchaToken)
+                .then((res) => {
+                    const data = res.data.data;
+                    const commitData = { token: data.token, applicantIdx: data.applicantIdx };
+                    store.commit('createApplicantInfo', commitData);
+                    resolve();
+                })
+                .catch((e) => {
+                    const err = e.response.data;
+                    reject(err);
+                })
+        });
     },
     'getApplicantData' : (store) => {
         return new Promise((resolve, reject) => {
