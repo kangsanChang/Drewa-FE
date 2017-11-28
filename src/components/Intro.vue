@@ -40,7 +40,6 @@ export default {
 
 <style lang="scss" scoped>
 #container {
-    /* auto 로 해야 크기 변화에 따라가면서 비율(grid offset = > 중앙) 유지 */
     margin: auto;
     width: 700px;
 }
@@ -104,9 +103,7 @@ export default {
     border: 1px solid;
     border-color: #2b2b2b;
     border-radius: 3px;
-    /* 부모 선택자 reference : & 
-    &#find-btn 은 .button#find-btn 을 의미.
-    */
+
     &#find-btn {
     background-color: white;
     color: black;

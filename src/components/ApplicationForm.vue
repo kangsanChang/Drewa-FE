@@ -122,16 +122,6 @@ export default {
     name: 'applicationForm',
     components : { vHeader },
     data(){
-        // const checkNumber = (rule, value, cb) => {
-        //     const num = parseInt(value);
-        //     if (num !== NaN &&  num>0) {
-        //         cb();
-        //     } else {
-        //         cb(new Error('올바른 숫자로 입력해 주세요.'));
-        //     }
-        // };
-
-        // 이미지나 포폴 주소는 S3에 직접 url 만들어서 서치 때리면 됨
         return {
             setApplicationData: {
                 season : '',
