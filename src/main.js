@@ -9,6 +9,9 @@ import {routes} from './routes'
 Vue.use(ElementUI);
 Vue.use(VueRouter);
 
+import { clone } from 'lodash';
+Object.defineProperty(Vue.prototype, '$clone', { value: clone });
+
 const router = new VueRouter({
   mode: 'history',
   routes

@@ -16,7 +16,7 @@
                             </el-select>
                         </el-form-item>
                         <el-form-item id="birth" class="half endcol">
-                            <el-input v-model="userFormData.birth" placeholder="생년월일 (예: 950222)"></el-input>
+                            <el-input v-model="userFormData.birth" placeholder="생년월일 (YYMMDD)"></el-input>
                         </el-form-item>
                         <el-form-item id="residence" class="half">
                             <el-input v-model="userFormData.residence" placeholder="현 거주지 (시/도, 군/구)"></el-input>
@@ -78,7 +78,7 @@
             </div>
             <div id="attached-document-wrapper" class="wrapper">
                 <h3 class="wrapper-title">첨부 자료</h3>
-                <span class="subtitle">(선택) 추가 자료나 포트폴리오를 첨부해 주세요.</span>
+                <span class="subtitle">(선택사항) 추가 자료나 포트폴리오를 첨부해 주세요.</span>
                 <div id="portfolio-upload-box">
                     <el-upload
                     name="user_portfolio"
@@ -107,7 +107,7 @@
             </div>
             <div id="submit-box" align="center">
                 <button id="save" @click="saveApplication">임시 저장</button>
-                <button id="submit">최종 제출</button>
+                <button id="submit"@click="sumbitApplication">최종 제출</button>
             </div>
         </div>
     </div>
@@ -142,7 +142,6 @@ export default {
                 position:"",
                 knownFrom:"",
                 personalUrl:"",
-                pictureFilename:"",
                 portfolioFilename:"",
                 applicantImageUrl: "",
                 applicantPortfolioUrl: "",
@@ -192,6 +191,72 @@ export default {
         })
     },
     methods: {
+        // Validator
+        // Birth
+        birthValidator(){
+            const pattern = /^(?:[0-9]{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[1,2][0-9]|3[0,1]))$/
+            if(pattern.test(this.userFormData.birth)){
+                return true;
+            }else{
+                this.$notify.error({
+                    title: '지원서 형식 오류',
+                    message: '생년월일은 올바른 YYMMDD 형식으로 작성해야 합니다.'
+                })
+                return false;
+            }
+        },
+        // Phone 
+        phoneValidator(){
+            const pattern = /^(?:(010\d{4})|(01[1|6|7|8|9]\d{3,4}))(\d{4})$/
+            if(pattern.test(this.userFormData.phone)){
+                return true;
+            }else{
+                this.$notify.error({
+                    title: '지원서 형식 오류',
+                    message: '올바른 휴대 전화 번호를 기입해 주세요.'
+                })
+                return false;
+            }
+        },
+        isEmptyArray(arr){
+            // arr 이 비었거나, element 중 빈 곳이 있는 경우 true를 return
+            if(arr.length === 0 || arr === null){
+                return true;
+            }else if (arr.some((val) => ((val === null) || (val === "")))){
+                // array 에서 비어있는 값이 있을 경우
+                return true;
+            }
+            return false;
+        },
+        // Required Input Checker
+        inputChecker(){
+            // 객체 복사
+            const requiredData = this.$clone(this.userFormData);
+            // not required.
+            delete requiredData.personalUrl
+            delete requiredData.applicantPortfolioUrl
+            delete requiredData.portfolioFilename
+
+            if(this.isEmptyArray(requiredData.answers)){
+                this.$notify.error({title: '제출 오류', message: '자기소개서 중 비어있는 항목이 있습니다.'})
+                return false;
+            }else if(this.isEmptyArray(requiredData.interviewAvailableTimes)){
+                this.$notify.error({title: '제출 오류', message: '면접시간이 선택되지 않았습니다.'})
+                return false;
+            }else{
+                // property 중 통과한 array 제거. 남은건 object
+                delete requiredData.answers
+                delete requiredData.interviewAvailableTimes
+                // Object.values(obj) 는 value 로만 이루어진 array
+                if(this.isEmptyArray(Object.values(requiredData))){
+                    this.$notify.error({title: "제출 오류", message: '제출하기 위해선 선택 사항을 제외한 모든 항목이 채워져야 합니다.'})
+                    return false;
+                }
+                console.log('great');
+                return true;
+            }
+        },
+
         // Picture Upload handler
         beforePictureUpload(file) {
             const isImage = file.type === 'image/jpeg' || file.type === 'image/png';
@@ -258,8 +323,14 @@ export default {
             this.userFormData.applicantPortfolioUrl = res.data.url;
         },
 
-        // Save Application
         saveApplication() {
+            // birth 나 phone의 값이 있을 때만 (null 아니면서 "" 아닐 때) validator 돌려서 체크함
+            if((this.userFormData.birth !== "") && (this.userFormData.birth !== null)){
+                if(!this.birthValidator()) return;
+            }
+            if(!(this.userFormData.phone === "") && !(this.userFormData.phone === null)){
+                if(!this.phoneValidator()) return;
+            }
             this.$store.dispatch('postApplicantData', { userFormData: this.userFormData });
             this.$notify({
                 title: "성공!",
@@ -267,6 +338,10 @@ export default {
                 type:"success"
             })
         },
+        sumbitApplication(){
+            if(!this.inputChecker()) return;
+            if(!this.birthValidator() || !this.phoneValidator()) return;
+        }
     },
 }
 </script>
