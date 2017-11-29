@@ -63,5 +63,18 @@ export default {
                 reject(e);
             })
         })
+    },
+    'submitApplicantData': (store, payload) => {
+        return new Promise((resolve, reject) => {
+            API.submitApplicantData(store.state.applicantIdx, store.state.token, payload.userFormData)
+                .then((res) => {
+                    const data = res.data.data;
+                    resolve('Application submitted successfully!')
+                })
+                .catch((e) => {
+                    console.log('error in action promise reject, submitApplicantData');
+                    reject(e);
+                })
+        })
     }
 };

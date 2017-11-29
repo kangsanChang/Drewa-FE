@@ -165,10 +165,7 @@ export default {
         }
     },
     mounted(){
-        const loading = this.$loading({
-            lock: true,
-            text: '로딩 중',
-        })
+        const loading = this.$loading({ lock: true, text: '로딩 중' })
         // Axios 를 통한 API call 은 여기서 하면 된다.
         this.setApplicationData.questions = ['지원 동기', '협업 경험', '기억에 남는 프로젝트', '좋아하는 서비스',],
         this.setApplicationData.interviewTimes = [
@@ -252,7 +249,6 @@ export default {
                     this.$notify.error({title: "제출 오류", message: '제출하기 위해선 선택 사항을 제외한 모든 항목이 채워져야 합니다.'})
                     return false;
                 }
-                console.log('great');
                 return true;
             }
         },
@@ -331,16 +327,51 @@ export default {
             if(!(this.userFormData.phone === "") && !(this.userFormData.phone === null)){
                 if(!this.phoneValidator()) return;
             }
-            this.$store.dispatch('postApplicantData', { userFormData: this.userFormData });
-            this.$notify({
-                title: "성공!",
-                message: "지원서를 저장하였습니다.",
-                type:"success"
-            })
+            const loading = this.$loading({ lock: true, text: '전송 중' });
+            this.$store.dispatch('postApplicantData', { userFormData: this.userFormData })
+            .then(()=> {
+                loading.close()
+                this.$notify({
+                    title: "성공!",
+                    message: "지원서를 저장하였습니다.",
+                    type:"success"
+                })
+            });
+            
+            loading.close()
         },
         sumbitApplication(){
+            // validation
             if(!this.inputChecker()) return;
             if(!this.birthValidator() || !this.phoneValidator()) return;
+
+            this.$confirm('지원서를 제출하시겠습니까? 제출 후에는 수정이 불가능합니다.', '확인', {
+                confirmButtonText: '네',
+                cancelButtonText: '아니오',
+                type: 'info'
+            }).then(() => {
+                const loading = this.$loading({ lock: true, text: '전송 중' });
+                this.$store.dispatch('submitApplicantData', { userFormData: this.userFormData })
+                .then(()=> {
+                    loading.close();
+                    this.$notify.success({
+                        title: "성공!",
+                        message: "지원서를 제출하였습니다. 감사합니다!",
+                    })
+                    this.$router.push({ name: 'status'});
+                }).catch(() => {
+                    loading.close();
+                    this.$notify.error({
+                        type: 'info',
+                        message: '제출 중 문제가 발생 하였습니다.'
+                    });
+                });
+            }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: '제출을 취소하였습니다.'
+                });
+            })
         }
     },
 }

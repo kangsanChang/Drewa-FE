@@ -177,7 +177,7 @@ export default {
             // Start Spinner
             const loading = this.$loading({
                 lock: true,
-                text: '로딩 중',
+                text: '전송 중',
             });
             this.$store.dispatch('createApplicant', {userInfo : this.userInfo, recaptchaToken})
             .then((res)=> {

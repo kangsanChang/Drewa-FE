@@ -37,7 +37,7 @@ export default {
     // Server에서 처리하는 변수명과 일치하면 가능 함.
     // return axios.post(BASE_URL + `/applicants/${applicantIdx}/application`, userFormData);
     // 일단은 가능한 버전으로
-    return axios.post(BASE_URL + `/applicants/${applicantIdx}/application`,{
+    return axios.post(BASE_URL + `/applicants/${applicantIdx}/application`, {
       userName: userFormData.name,
       userPosition: userFormData.position,
       applicantGender: userFormData.gender ,
@@ -51,6 +51,25 @@ export default {
       personalUrl: userFormData.personalUrl,
       answers: userFormData.answers ,
       interviewAvailableTime: userFormData.interviewAvailableTimes ,
+    })
+  },
+  submitApplicantData(applicantIdx, token, userFormData) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+
+    return axios.post(BASE_URL + `/applicants/${applicantIdx}/application/submit`, {
+      userName: userFormData.name,
+      userPosition: userFormData.position,
+      applicantGender: userFormData.gender,
+      applicantBirthday: userFormData.birth,
+      applicantLocation: userFormData.residence,
+      applicantOrganization: userFormData.company,
+      applicantMajor: userFormData.major,
+      applicantPhone: userFormData.phone,
+      entryRoute: userFormData.knownFrom,
+      portfolioFileUrl: userFormData.portfolioFileUrl,
+      personalUrl: userFormData.personalUrl,
+      answers: userFormData.answers,
+      interviewAvailableTime: userFormData.interviewAvailableTimes,
     })
   },
 };
