@@ -336,14 +336,19 @@ export default {
                     message: "지원서를 저장하였습니다.",
                     type:"success"
                 })
+            })
+            .catch(() => {
+                loading.close();
+                this.$notify.error({
+                    message: '제출 중 문제가 발생 하였습니다.'
+                });
             });
-            
-            loading.close()
         },
         sumbitApplication(){
             // validation
             if(!this.inputChecker()) return;
-            if(!this.birthValidator() || !this.phoneValidator()) return;
+            if(!this.birthValidator()) return;
+            if(!this.phoneValidator()) return;
 
             this.$confirm('지원서를 제출하시겠습니까? 제출 후에는 수정이 불가능합니다.', '확인', {
                 confirmButtonText: '네',
@@ -362,7 +367,6 @@ export default {
                 }).catch(() => {
                     loading.close();
                     this.$notify.error({
-                        type: 'info',
                         message: '제출 중 문제가 발생 하였습니다.'
                     });
                 });
