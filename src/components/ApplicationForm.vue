@@ -164,6 +164,13 @@ export default {
             return `/api/applicants/${ this.$store.state.applicantIdx }/application/portfolio`
         }
     },
+    created(){
+        // 모르고 새로고침 눌렀을 시 sessionstorage 에서 가져옴.
+        if(this.$store.state.token === "" && sessionStorage.getItem('user_token')){
+            this.$store.state.token = sessionStorage.getItem('user_token');
+            this.$store.state.applicantIdx = sessionStorage.getItem('user_idx');
+        }
+    },
     mounted(){
         const loading = this.$loading({ lock: true, text: '로딩 중' })
         // Axios 를 통한 API call 은 여기서 하면 된다.

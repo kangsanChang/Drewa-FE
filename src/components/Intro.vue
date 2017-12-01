@@ -34,6 +34,11 @@ export default {
       title: '디프만 4기 회원을 모집합니다',
       description : Config.DESCRIPTION,
     }
+  },
+  mounted() {
+      if(typeof(Storage) === "undefined") {
+        alert('최신 브라우저를 설치한 후 이용해주시기 바랍니다.')
+    }
   }
 }
 </script>

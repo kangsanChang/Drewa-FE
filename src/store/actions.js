@@ -9,6 +9,8 @@ export default {
                     const data = res.data.data;
                     const commitData = { token: data.token, applicantIdx: data.applicantIdx };
                     store.commit('createApplicantInfo', commitData);
+                    sessionStorage.setItem('user_token', data.token);
+                    sessionStorage.setItem('user_idx', data.applicantIdx);
                     resolve();
                 })
                 .catch((e) => {
@@ -30,6 +32,8 @@ export default {
                     const data = res.data.data;
                     const commitData = { token: data.token, applicantIdx: data.applicantIdx };
                     store.commit('createApplicantInfo', commitData);
+                    sessionStorage.setItem('user_token', data.token);
+                    sessionStorage.setItem('user_idx', data.applicantIdx);
                     resolve();
                 })
                 .catch((e) => {
