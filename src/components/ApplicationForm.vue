@@ -47,6 +47,7 @@
                 <div id="photo-box">
                     <div id="photo-upload-box" class="box">
                         <el-upload
+                        :disabled="userFormData.isSubmit"
                         v-loading="picLoading"
                         name="user_image"
                         class="avatar-uploader"
@@ -104,6 +105,7 @@
                 <span class="subtitle">(선택사항) 추가 자료나 포트폴리오를 첨부해 주세요.</span>
                 <div id="portfolio-upload-box">
                     <el-upload
+                    :disabled="userFormData.isSubmit"
                     name="user_portfolio"
                     class="upload-portfolio"
                     :headers="authorizationHeader"
@@ -130,9 +132,12 @@
                     </el-checkbox-group>
                 </div>
             </div>
-            <div id="submit-box" align="center">
-                <button id="save" @click="saveApplication">임시 저장</button>
-                <button id="submit"@click="sumbitApplication">최종 제출</button>
+            <div v-if="userFormData.isSubmit===false" class="control-box" align="center">
+                <button class="button" id="save" @click="saveApplication">임시 저장</button>
+                <button class="button" id="submit"@click="sumbitApplication">최종 제출</button>
+            </div>
+            <div v-else class="control-box" align="center">
+                <router-link class="button" id="ok" :to="{name:'status'}" tag="button">확인 완료</router-link>
             </div>
         </div>
     </div>
@@ -175,6 +180,7 @@ export default {
                 devAnswers : [],
                 desAnswers : [],
                 interviewAvailableTimes : [],
+                isSubmit: "",
             },
         }
     },
@@ -363,7 +369,6 @@ export default {
             const loading = this.$loading({ lock: true, text: '전송 중' });
             this.$store.dispatch('removePortfolio')
             .then((res)=> {
-                console.log('res data from server \n', res);
                 loading.close()
                 this.$notify({
                     title: "성공!",
@@ -544,6 +549,7 @@ export default {
     #picture-upload-desc {
         margin: auto;
         display: inline-block;
+        font-size: 13px;
     }
 }
 
@@ -588,9 +594,9 @@ export default {
     }
 }
 
-#submit-box {
+.control-box {
     margin: 60px 0;
-    button {
+    .button {
         width: 100px;
         height: 40px;
         border: 1px solid #2b2b2b;
@@ -613,6 +619,11 @@ export default {
         }
 
         &#submit {
+            background-color: #2b2b2b;
+            color: white;
+        }
+
+        &#ok {
             background-color: #2b2b2b;
             color: white;
         }

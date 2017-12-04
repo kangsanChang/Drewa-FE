@@ -24,7 +24,7 @@ function checkToken(to, from, next){
     // local storage 에 있는지도 확인해야 함.
     if(store.state.token === "" && sessionStorage.getItem('user_token') === null) {
         alert('지원자 로그인 후 이용하시기 바랍니다.');
-        next('/')
+        next('/login')
     } else {
         next();
     }
