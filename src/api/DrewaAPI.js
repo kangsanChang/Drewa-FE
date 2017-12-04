@@ -32,6 +32,10 @@ export default {
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
     return axios.get(BASE_URL+`/applicants/${applicantIdx}/application`)
   },
+  removePortfolio(applicantIdx, token) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+    return axios.delete(BASE_URL + `/applicants/${applicantIdx}/application/portfolio`)
+  },
   postApplicantData(applicantIdx, token, userFormData) {
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
 

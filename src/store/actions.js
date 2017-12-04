@@ -59,7 +59,20 @@ export default {
                 resolve(data)
             })
             .catch((e)=> {
-                console.log('error in actions promise reject, getAPplicantData');
+                console.log('error in actions promise reject, getApplicantData');
+                reject(e);
+            })
+        })
+    },
+    'removePortfolio' : (store) => {
+        return new Promise((resolve, reject) => {
+            API.removePortfolio(store.state.applicantIdx, store.state.token)
+            .then((res) => {
+                const data = res.data.data;
+                resolve(data);
+            })
+            .catch((e) => {
+                console.log('error in actions promise reject, removePortfolio \n', e)
                 reject(e);
             })
         })

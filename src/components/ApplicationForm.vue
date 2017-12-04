@@ -112,6 +112,8 @@
                     :on-success="uploadFileSuccess"
                     :limit = 1
                     :on-exceed="handleFileLimitexceed"
+                    :file-list="fileList"
+                    :on-remove="handleFileRemove"
                     >
                     <el-button size="small" type="primary">파일 업로드</el-button>
                     <div slot="tip" class="el-upload__tip">15MB 이하의 PDF파일</div>
@@ -188,6 +190,9 @@ export default {
         },
         portfolioUploadUrl() {
             return `/api/applicants/${ this.$store.state.applicantIdx }/application/portfolio`
+        },
+        fileList() {
+            return this.userFormData.portfolioFilename ? [{name: this.userFormData.portfolioFilename, url: this.userFormData.applicantPortfolioUrl}] : []
         }
     },
     created(){
@@ -352,8 +357,27 @@ export default {
                 type:"success"
             })
             this.userFormData.applicantPortfolioUrl = res.data.url;
+            this.userFormData.portfolioFilename = res.data.fileName;
         },
-
+        handleFileRemove(){
+            const loading = this.$loading({ lock: true, text: '전송 중' });
+            this.$store.dispatch('removePortfolio')
+            .then((res)=> {
+                console.log('res data from server \n', res);
+                loading.close()
+                this.$notify({
+                    title: "성공!",
+                    message: "정상적으로 파일을 삭제하였습니다.",
+                    type:"success"
+                })
+            })
+            .catch(() => {
+                loading.close()
+                this.$notify.error({
+                    message: '파일 삭제 중 문제가 발생 하였습니다.'
+                });
+            })
+        },
         saveApplication() {
             // birth 나 phone의 값이 있을 때만 (null 아니면서 "" 아닐 때) validator 돌려서 체크함
             if((this.userFormData.birth !== "") && (this.userFormData.birth !== null)){
@@ -364,7 +388,7 @@ export default {
             }
             const loading = this.$loading({ lock: true, text: '전송 중' });
             this.$store.dispatch('postApplicantData', { userFormData: this.userFormData })
-            .then(()=> {
+            .then(() => {
                 loading.close()
                 this.$notify({
                     title: "성공!",
@@ -513,13 +537,13 @@ export default {
             width: 172px;
             height: 178px;
             display: block;
+            border-radius: 10px;
         }
     }
 
     #picture-upload-desc {
         margin: auto;
         display: inline-block;
-        font-size: 13px;
     }
 }
 

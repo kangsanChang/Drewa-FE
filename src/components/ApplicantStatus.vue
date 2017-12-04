@@ -59,7 +59,7 @@ export default {
           this.message = `지원서가 아직 제출되지 않았습니다.\n\n마감기한 (${this.deadline}) 까지 제출을 완료해주세요.`
       }else if(this.status === '제출 완료'){
           this.docStatus = 'finish'
-          this.message = `지원서를 이미 제출 하였습니다.\n\n서류 합격 여부 및 면접시간은 발표일 (${this.deadline}) 후 이곳에서 확인하실 수 있습니다.`
+          this.message = `지원서를 제출 하셨습니다.\n\n서류 합격 여부 및 면접시간은 발표일 (${this.deadline}) 후 이곳에서 확인하실 수 있습니다.`
       }else if(this.status === '서류 불합격'){
           this.message = `서류모집에 불합격하였습니다.\n\n다음번에 좋은 기회로 만날 수 있길 바랍니다.\n\n지원해주셔서 감사합니다.`
       }else if(this.status === '서류 합격'){
