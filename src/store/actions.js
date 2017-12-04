@@ -42,6 +42,15 @@ export default {
                 })
         });
     },
+    'getApplicationSetting' : (store) => {
+        return new Promise((resolve, reject) => {
+            API.getApplicationSetting(store.state.token)
+            .then((res) => {
+                const data = res.data.data;
+                resolve(data);
+            })
+        })
+    },
     'getApplicantData' : (store) => {
         return new Promise((resolve, reject) => {
             API.getApplicantData(store.state.applicantIdx, store.state.token)

@@ -64,7 +64,7 @@
             </div>
             <div id="cover-letter-wrapper" class="wrapper">
                 <h3 class="wrapper-title">자기소개서</h3>
-                <div v-for="(question, index) in setApplicationData.questions" :key="index" class="text-box">
+                <div v-for="(question, index) in setApplicationData.questions.commonQ" :key="index" class="text-box">
                     <h4 class="title">{{index + 1}}. {{ question }}</h4>
                     <el-input
                     type="textarea"
@@ -72,8 +72,31 @@
                     :rows="15"
                     v-model="userFormData.answers[index]"
                     >
-                    <!-- 필요하면 @blur attribute 사용 -->
                     </el-input>
+                </div>
+                <div v-if="userFormData.position==='developer'">
+                    <div v-for="(question, index) in setApplicationData.questions.devQ" :key="index" class="text-box">
+                        <h4 class="title">{{index + setApplicationData.questions.commonQ.length + 1}}. {{ question }}</h4>
+                        <el-input
+                        type="textarea"
+                        resize="none"
+                        :rows="15"
+                        v-model="userFormData.devAnswers[index]"
+                        >
+                        </el-input>
+                    </div>
+                </div>
+                <div v-if="userFormData.position==='designer'">
+                    <div v-for="(question, index) in setApplicationData.questions.desQ" :key="index" class="text-box">
+                        <h4 class="title">{{index + setApplicationData.questions.commonQ.length + 1}}. {{ question }}</h4>
+                        <el-input
+                        type="textarea"
+                        resize="none"
+                        :rows="15"
+                        v-model="userFormData.desAnswers[index]"
+                        >
+                        </el-input>
+                    </div>
                 </div>
             </div>
             <div id="attached-document-wrapper" class="wrapper">
@@ -128,8 +151,9 @@ export default {
             fullscreenLoading: false,
             setApplicationData: {
                 season : '',
-                questions : [],
+                questions : '',
                 interviewTimes : [],
+                deadline : '',
             },
             userFormData: {
                 name:"",
@@ -146,6 +170,8 @@ export default {
                 applicantImageUrl: "",
                 applicantPortfolioUrl: "",
                 answers : [],
+                devAnswers : [],
+                desAnswers : [],
                 interviewAvailableTimes : [],
             },
         }
@@ -174,14 +200,16 @@ export default {
     mounted(){
         const loading = this.$loading({ lock: true, text: '로딩 중' })
         // Axios 를 통한 API call 은 여기서 하면 된다.
-        this.setApplicationData.questions = ['지원 동기', '협업 경험', '기억에 남는 프로젝트', '좋아하는 서비스',],
-        this.setApplicationData.interviewTimes = [
-            {date: '11/25 (토)', times: ['14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30']},
-            {date: '11/26 (일)', times: ['14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30']},
-        ]
-        this.setApplicationData.season = '4'
 
-        // 서버에서 가져온 setApplicationData 를 바인딩 해야 함
+        this.$store.dispatch('getApplicationSetting')
+        .then((res) => {
+            this.setApplicationData = res;
+            loading.close()
+        })
+        .catch((e) => {
+            console.log('error occured in dispatch when getApplicationSetting\n', e);
+            loading.close()
+        })
 
         this.$store.dispatch('getApplicantData')
         .then((res) => {

@@ -22,8 +22,9 @@ export default {
     });
   },
   // application 접근 시 마운트 전 필요한 데이터 (면접 시간, season, 기타등등 가져오기)
-  getApplicationSetting() {
-    return axios.get(BASE_URL) // 서버에서 URL 정해줘야 함.
+  getApplicationSetting(token) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+    return axios.get(BASE_URL +'/recruitmentInfo') // 서버에서 URL 정해줘야 함.
   },
   // 지원자가 적어놓은 정보 가져옴. application 접근 시 무조건 한번 실행
   getApplicantData(applicantIdx, token) {
@@ -50,6 +51,8 @@ export default {
       portfolioFileUrl: userFormData.portfolioFileUrl ,
       personalUrl: userFormData.personalUrl,
       answers: userFormData.answers ,
+      devAnswers: userFormData.devAnswers,
+      desAnswers: userFormData.desAnswers,
       interviewAvailableTime: userFormData.interviewAvailableTimes ,
     })
   },
@@ -69,6 +72,8 @@ export default {
       portfolioFileUrl: userFormData.portfolioFileUrl,
       personalUrl: userFormData.personalUrl,
       answers: userFormData.answers,
+      devAnswers: userFormData.devAnswers,
+      desAnswers: userFormData.desAnswers,
       interviewAvailableTime: userFormData.interviewAvailableTimes,
     })
   },
