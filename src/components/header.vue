@@ -1,21 +1,21 @@
 <template>
-    <header class="header">
-        <div class="header-element">
-            <span>{{ title }}</span>
-        </div>
-    </header>
+  <header class="header">
+    <div class="header-element">
+      <span>{{ title }}</span>
+    </div>
+  </header>
 </template>
 
 <script>
-export default {
+  export default {
     // 간단하게 받아오려면 array 형태로 받으면 되고, 객체 형태로 받아도 된다.
-    props: ['title']
-}
+    props: ['title'],
+  }
 </script>
 
 
 <style lang="scss" scoped>
-header {
+  header {
     background-color: #2b2b2b;
     color: white;
     vertical-align: middle;
@@ -23,13 +23,13 @@ header {
     padding-left: 30px;
 
     .header-element {
-        display: inline-block;
-        margin-top: 21px;
-        margin-bottom: 24px;
+      display: inline-block;
+      margin-top: 21px;
+      margin-bottom: 24px;
 
-        span {
-            font-size: 16px;
-        }
+      span {
+        font-size: 16px;
+      }
     }
-}
+  }
 </style>

@@ -4,22 +4,22 @@ import 'element-ui/lib/theme-chalk/index.css'
 import App from './App.vue'
 import store from './store'
 import VueRouter from 'vue-router'
-import {routes} from './routes'
+import { routes } from './routes'
+import { clone } from 'lodash'
 
-Vue.use(ElementUI);
-Vue.use(VueRouter);
+Vue.use(ElementUI)
+Vue.use(VueRouter)
 
-import { clone } from 'lodash';
-Object.defineProperty(Vue.prototype, '$clone', { value: clone });
+Object.defineProperty(Vue.prototype, '$clone', {value: clone})
 
 const router = new VueRouter({
   mode: 'history',
-  routes
+  routes,
 })
 
 new Vue({
   store,
   router,
   el: '#app',
-  render: h => h(App)
+  render: h => h(App),
 })
