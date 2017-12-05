@@ -55,7 +55,9 @@
                         :action="pictureUploadUrl"
                         :show-file-list="false"
                         :on-success="uploadPictureSuccess"
-                        :before-upload="beforePictureUpload">
+                        :before-upload="beforePictureUpload"
+                        :on-error="uploadFail"
+                        >
                         <img v-if="userFormData.applicantImageUrl" :src="userFormData.applicantImageUrl" class="avatar">
                         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                         </el-upload>
@@ -112,10 +114,12 @@
                     :action="portfolioUploadUrl"
                     :before-upload="beforeFileUpload"
                     :on-success="uploadFileSuccess"
-                    :limit = 1
+                    :limit = "1"
                     :on-exceed="handleFileLimitexceed"
                     :file-list="fileList"
+                    :on-preview="handleFilePreview"
                     :on-remove="handleFileRemove"
+                    :on-error="uploadFail"
                     >
                     <el-button size="small" type="primary">파일 업로드</el-button>
                     <div slot="tip" class="el-upload__tip">15MB 이하의 PDF파일</div>
@@ -155,7 +159,6 @@ export default {
     data(){
         return {
             picLoading: false,
-            fullscreenLoading: false,
             setApplicationData: {
                 season : '',
                 questions : '',
@@ -202,7 +205,7 @@ export default {
         }
     },
     created(){
-        // 모르고 새로고침 눌렀을 시 sessionstorage 에서 가져옴.
+        // 모르고 새로고침 눌렀을 시 sessionStorage 에서 가져옴.
         if(this.$store.state.token === "" && sessionStorage.getItem('user_token')){
             this.$store.state.token = sessionStorage.getItem('user_token');
             this.$store.state.applicantIdx = sessionStorage.getItem('user_idx');
@@ -210,27 +213,49 @@ export default {
     },
     mounted(){
         const loading = this.$loading({ lock: true, text: '로딩 중' })
-        // Axios 를 통한 API call 은 여기서 하면 된다.
-
         this.$store.dispatch('getApplicationSetting')
         .then((res) => {
             this.setApplicationData = res;
-            loading.close()
+            if(sessionStorage.getItem('savedData')){
+             // 토큰 만료로 인한 데이터 유실을 막기 위해 sessionStorage 에 임시 저장한 data 가 있으면 불러오는 부분.
+                this.userFormData = JSON.parse(sessionStorage.getItem('savedData'))
+                sessionStorage.removeItem('savedData');
+                loading.close()
+                this.$alert('재 로그인으로 인한 임시 Data가 발견 되었습니다. 반드시 임시저장 또는 제출하여야 정보가 저장됩니다.', '임시 Data 발견', {
+                    confirmButtonText: '확인',
+                    type: 'info'
+                })
+            } else {
+                this.$store.dispatch('getApplicantData')
+                .then((res) => {
+                    this.userFormData = res;
+                    loading.close()
+                })
+                .catch((e) => {
+                    loading.close()
+                    if(e.response.status === 401) {
+                        this.$router.push({ name: 'login'})
+                        this.$notify.info({
+                            title: '접속 시간 만료',
+                            message: '다시 로그인 해 주시기 바랍니다.'
+                        });
+                        return;
+                    }
+                    console.log('error occured in dispatch when getApplicantData\n', e);
+                })
+            }
         })
         .catch((e) => {
+            loading.close()
+            if(e.response.status === 401) {
+                this.$router.push({ name: 'login'})
+                this.$notify.info({
+                    title: '접속 시간 만료',
+                    message: '다시 로그인 해 주시기 바랍니다.'
+                });
+                return;
+            }
             console.log('error occured in dispatch when getApplicationSetting\n', e);
-            loading.close()
-        })
-
-        this.$store.dispatch('getApplicantData')
-        .then((res) => {
-            // 서버에서 가져온 내 지원서를 바인딩.
-            this.userFormData = res;
-            loading.close()
-        })
-        .catch((e) => {
-            console.log('error occured in dispatch when getApplicantData\n', e);
-            loading.close()
         })
     },
     methods: {
@@ -245,6 +270,7 @@ export default {
                     title: '지원서 형식 오류',
                     message: '생년월일은 올바른 YYMMDD 형식으로 작성해야 합니다.'
                 })
+                window.scrollTo(0,0);
                 return false;
             }
         },
@@ -258,6 +284,7 @@ export default {
                     title: '지원서 형식 오류',
                     message: '올바른 휴대 전화 번호를 기입해 주세요.'
                 })
+                window.scrollTo(0,0);
                 return false;
             }
         },
@@ -287,7 +314,7 @@ export default {
                 this.$notify.error({title: '제출 오류', message: '면접시간이 선택되지 않았습니다.'})
                 return false;
             }else{
-                // property 중 통과한 array 제거. 남은건 object
+                // validation 통과 한 array 제거. 남은건 object
                 delete requiredData.answers
                 delete requiredData.interviewAvailableTimes
                 // Object.values(obj) 는 value 로만 이루어진 array
@@ -330,6 +357,21 @@ export default {
             this.userFormData.applicantImageUrl = res.data.url;
             this.picLoading = false;
         },
+        uploadFail(err){
+            if(err.status === 401){
+                sessionStorage.setItem('savedData', JSON.stringify(this.userFormData));
+                this.$router.push({ name: 'login'})
+                this.$notify.info({
+                    title: '접속 시간 만료',
+                    message: '다시 로그인 해 주시기 바랍니다.'
+                });
+                return;
+            }
+            this.$notify({
+                message: '파일 업로드 중 알 수 없는 에러가 발생하였습니다.',
+                type:"error"
+            })
+        },
 
         // Portfolio Upload Handler
         beforeFileUpload(file) {
@@ -339,7 +381,7 @@ export default {
             if (!isPdf) {
                 this.$notify.error({
                     title: '잘못 된 형식!',
-                    message: '파일은 pdf 확장자여야 합니다.'
+                    message: '파일은 PDF 형식이어야 합니다.'
                 });
             }
             if (!isLt15M) {
@@ -365,9 +407,13 @@ export default {
             this.userFormData.applicantPortfolioUrl = res.data.url;
             this.userFormData.portfolioFilename = res.data.fileName;
         },
+        handleFilePreview() {
+            // auth 필요?
+            window.open(this.userFormData.applicantPortfolioUrl, '_blank');
+        },
         handleFileRemove(){
             const loading = this.$loading({ lock: true, text: '전송 중' });
-            this.$store.dispatch('removePortfolio')
+            this.$store.dispatch('removePortfolio', { userFormData: this.userFormData })
             .then((res)=> {
                 loading.close()
                 this.$notify({
@@ -376,8 +422,17 @@ export default {
                     type:"success"
                 })
             })
-            .catch(() => {
+            .catch((e) => {
                 loading.close()
+                if(e.response.status === 401) {
+                    loading.close();
+                    this.$router.push({ name: 'login'})
+                    this.$notify.info({
+                        title: '접속 시간 만료',
+                        message: '다시 로그인 해 주시기 바랍니다.'
+                    });
+                    return;
+                }
                 this.$notify.error({
                     message: '파일 삭제 중 문제가 발생 하였습니다.'
                 });
@@ -388,7 +443,7 @@ export default {
             if((this.userFormData.birth !== "") && (this.userFormData.birth !== null)){
                 if(!this.birthValidator()) return;
             }
-            if(!(this.userFormData.phone === "") && !(this.userFormData.phone === null)){
+            if((this.userFormData.phone !== "") && (this.userFormData.phone !== null)){
                 if(!this.phoneValidator()) return;
             }
             const loading = this.$loading({ lock: true, text: '전송 중' });
@@ -401,8 +456,16 @@ export default {
                     type:"success"
                 })
             })
-            .catch(() => {
-                loading.close();
+            .catch((e) => {
+                loading.close(e);
+                if(e.response.status === 401) {
+                    this.$router.push({ name: 'login'})
+                    this.$notify.info({
+                        title: '접속 시간 만료',
+                        message: '다시 로그인 해 주시기 바랍니다.'
+                    });
+                    return;
+                }
                 this.$notify.error({
                     message: '제출 중 문제가 발생 하였습니다.'
                 });
@@ -421,19 +484,28 @@ export default {
             }).then(() => {
                 const loading = this.$loading({ lock: true, text: '전송 중' });
                 this.$store.dispatch('submitApplicantData', { userFormData: this.userFormData })
-                .then(()=> {
-                    loading.close();
-                    this.$notify.success({
-                        title: "성공!",
-                        message: "지원서를 제출하였습니다. 감사합니다!",
-                    })
-                    this.$router.push({ name: 'status'});
-                }).catch(() => {
-                    loading.close();
-                    this.$notify.error({
-                        message: '제출 중 문제가 발생 하였습니다.'
+                    .then(()=> {
+                        loading.close();
+                        this.$router.push({ name: 'status'});
+                        this.$notify.success({
+                            title: "성공!",
+                            message: "지원서를 제출하였습니다. 감사합니다!",
+                        })
+                    }).catch((e) => {
+                        if(e.response.status === 401) {
+                            loading.close();
+                            this.$router.push({ name: 'login'})
+                            this.$notify.info({
+                                title: '접속 시간 만료',
+                                message: '다시 로그인 해 주시기 바랍니다.'
+                            });
+                            return;
+                        }
+                        this.$notify.error({
+                            message: '제출 중 문제가 발생 하였습니다.'
+                        });
+                        loading.close();
                     });
-                });
             }).catch(() => {
                 this.$message({
                     type: 'info',

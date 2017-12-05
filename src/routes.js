@@ -17,9 +17,6 @@ export const routes = [
 ]
 
 // es6 arrow function 스타일로 적으면 안먹힘!!
-// 궁금한점 :
-// check Token 으로 토큰이 존재하는지만 확인 함.
-// 이래도 되는지? API 요청 시에는 token header 에 담아서 보내긴 함.
 function checkToken(to, from, next){
     // local storage 에 있는지도 확인해야 함.
     if(store.state.token === "" && sessionStorage.getItem('user_token') === null) {

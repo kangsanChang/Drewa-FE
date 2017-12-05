@@ -42,12 +42,16 @@ export default {
                 })
         });
     },
+    // 401 에러 (토큰 만료 및 인증 이상한경우)일 때 redirect 는 actions 밖에서
     'getApplicationSetting' : (store) => {
         return new Promise((resolve, reject) => {
             API.getApplicationSetting(store.state.token)
             .then((res) => {
                 const data = res.data.data;
                 resolve(data);
+            })
+            .catch((e) => {
+                reject(e);
             })
         })
     },
@@ -64,7 +68,7 @@ export default {
             })
         })
     },
-    'removePortfolio' : (store) => {
+    'removePortfolio' : (store,payload) => {
         return new Promise((resolve, reject) => {
             API.removePortfolio(store.state.applicantIdx, store.state.token)
             .then((res) => {
@@ -72,7 +76,9 @@ export default {
                 resolve(data);
             })
             .catch((e) => {
-                console.log('error in actions promise reject, removePortfolio \n', e)
+                if (e.response.status === 401) {
+                    sessionStorage.setItem('savedData', JSON.stringify(payload.userFormData))
+                }
                 reject(e);
             })
         })
@@ -85,7 +91,9 @@ export default {
                 resolve('Application saved successfully!')
             })
             .catch((e) => {
-                console.log('error in action promise reject, postApplicantData');
+                if(e.response.status === 401){
+                    sessionStorage.setItem('savedData', JSON.stringify(payload.userFormData))
+                }
                 reject(e);
             })
         })
@@ -98,7 +106,9 @@ export default {
                     resolve('Application submitted successfully!')
                 })
                 .catch((e) => {
-                    console.log('error in action promise reject, submitApplicantData');
+                    if (e.response.status === 401) {
+                        sessionStorage.setItem('savedData', JSON.stringify(payload.userFormData))
+                    }
                     reject(e);
                 })
         })
