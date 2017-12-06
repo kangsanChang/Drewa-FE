@@ -148,6 +148,7 @@
       </div>
       <div v-if="userFormData.isSubmit===false" class="control-box" align="center">
         <button class="button" id="save" @click="saveApplication">임시 저장</button>
+        <router-link class="button" id="status" :to="{name:'status'}" tag="button">지원자 상태</router-link>
         <button class="button" id="submit" @click="sumbitApplication">최종 제출</button>
       </div>
       <div v-else class="control-box" align="center">
@@ -713,7 +714,11 @@
         background-color: #2b2b2b;
         color: white;
       }
-
+      &#status {
+        background-color: white;
+        color: #2b2b2b;
+        margin-right: 10px;
+      }
       &#ok {
         background-color: #2b2b2b;
         color: white;

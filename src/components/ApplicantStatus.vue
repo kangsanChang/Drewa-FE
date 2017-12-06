@@ -1,6 +1,6 @@
 <template>
   <div id="container">
-    <v-header :title="title"></v-header>
+    <v-header :title="title" :logout="true"></v-header>
     <div id="contents-wrapper">
       <div id="step-box">
         <el-steps :active="active">
