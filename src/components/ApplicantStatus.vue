@@ -4,9 +4,9 @@
     <div id="contents-wrapper">
       <div id="step-box">
         <el-steps :active="active">
-          <el-step title="서류" :status="docStatus" description="서류 전형 진행 중"></el-step>
-          <el-step title="면접" :status="interviewStatus" description="면접 전형 진행 중"></el-step>
-          <el-step title="최종" :status="finalStatus" description="최종 합격 안내"></el-step>
+          <el-step title="서류" :status="docStatus" :description="docDesc"></el-step>
+          <el-step title="면접" :status="interviewStatus" :description="interDesc"></el-step>
+          <el-step title="최종" :status="finalStatus" :description="finalDesc"></el-step>
         </el-steps>
       </div>
       <div id="message-wrapper">
@@ -47,40 +47,85 @@
     data () {
       return {
         title: '내 지원정보',
-        status: '제출 완료', // user status (미제출, 제출 완료, 서류 불합격, 서류 합격, 최종 불합격, 최종 합격)
         // steps icon
         docStatus: 'wait',
         interviewStatus: 'wait',
         finalStatus: 'wait',
+        // steps desc
+        docDesc: '',
+        interDesc: '',
+        finalDesc: '',
 
-        deadline: '2018.2.14 밤12시', // 서류 마감 기한
+        status: '', // user status (미제출, 제출 완료, 서류 불합격, 서류 합격, 최종 불합격, 최종 합격)
+        interviewPlace: '',
+        deadline: '', 
         message: '',
-        fixedTime: 'n월 n일 14:00 ', // 면접 확정 시간
+        confirmedInterviewTime: '',
         active: 1, // 서류 진행상황 (step 에 binding 함) (~과정 진행 중 및 상태 그림)
       }
     },
-    mounted () {
-      if (this.status === '미제출') {
-        this.message = `지원서가 아직 제출되지 않았습니다.\n\n마감기한 (${this.deadline}) 까지 제출을 완료해주세요.`
-      } else if (this.status === '제출 완료') {
-        this.docStatus = 'finish'
-        this.message = `지원서를 제출 하셨습니다.\n\n서류 합격 여부 및 면접시간은 발표일 (${this.deadline}) 후 이곳에서 확인하실 수 있습니다.`
-      } else if (this.status === '서류 불합격') {
-        this.message = `서류모집에 불합격하였습니다.\n\n다음번에 좋은 기회로 만날 수 있길 바랍니다.\n\n지원해주셔서 감사합니다.`
-      } else if (this.status === '서류 합격') {
-        this.active = '2'
-        this.docStatus = 'success'
-        this.interviewStatus = 'finish'
-        this.message = `서류모집에 합격하였습니다.\n\n면접 시간과 장소는 아래와 같습니다. 정장이 아닌 편한 복장으로 참석해주시면 감사하겠습니다.\n\n은행권청년창업재단(D.CAMP) 6층 회의실, ${this.fixedTime}`
-      } else if (this.status === '최종 불합격') {
-        this.message = `면접과정을 통과하지 못했습니다.\n\n다음번에 좋은 기회로 만날 수 있길 바랍니다.\n\n지원해주셔서 감사합니다.`
-      } else if (this.status === '최종 합격') {
-        this.active = '3'
-        this.docStatus = 'success'
-        this.interviewStatus = 'success'
-        this.finalStatus = 'success'
-        this.message = `최종 합격하였습니다. 축하합니다!\n\n발대식 및 오리엔테이션은 ${this.openingTime} , 한국창의과학재단 11층 스카이라운지에서 진행 될 예정입니다.\n\n감사합니다.`
+    created () {
+      // 모르고 새로고침 눌렀을 시 sessionStorage 에서 가져옴.
+      if (this.$store.state.token === '' && sessionStorage.getItem('user_token')) {
+        this.$store.state.token = sessionStorage.getItem('user_token')
+        this.$store.state.applicantIdx = sessionStorage.getItem('user_idx')
       }
+    },
+    mounted () {
+      const loading = this.$loading({lock: true, text: '로딩 중'})
+      this.$store.dispatch('getApplicantStatus')
+      .then((res) => {
+        this.deadline = this.moment(res.deadline).format('YYYY-MM-DD / hh:mm');
+        this.interviewPlace = res.interviewPlace;
+        this.confirmedInterviewTime = res.confirmedInterviewTime;
+        loading.close()
+        if(!res.isSubmit){
+          this.status = '미제출'
+          this.docDesc = '서류 전형 진행 중'
+          this.message = `지원서가 아직 제출되지 않았습니다.\n\n마감기한 (${this.deadline}) 까지 제출을 완료해주세요.`
+          return;
+        }
+
+        if(res.isApplicationPass === null){
+          this.status = '제출 완료'
+          this.docDesc = '서류 전형 진행 중'
+          this.active = 1
+          this.docStatus = 'finish'
+          this.message = `지원서를 제출 하셨습니다.\n\n서류 합격 여부 및 면접시간은 발표일 (${this.deadline}) 후 이곳에서 확인하실 수 있습니다.`
+          return;
+        } else if (!res.isApplicationPass) {
+          this.status = '서류 불합격'
+          this.message = `서류모집에 불합격하였습니다.\n\n다음번에 좋은 기회로 만날 수 있길 바랍니다.\n\n지원해주셔서 감사합니다.`
+          return;
+        } else {
+          this.status === '서류 합격'
+          this.interDesc = '면접 전형 진행 중'
+          this.active = 2
+          this.docStatus = 'success'
+          this.interviewStatus = 'finish'
+          this.message = `서류모집에 합격하였습니다.\n\n면접 시간과 장소는 아래와 같습니다. 정장이 아닌 편한 복장으로 참석해주시면 감사하겠습니다.\n\n${this.interviewPlace}, ${this.confirmedInterviewTime}`
+          return;
+        }
+
+        if(!res.isFinalPass){
+          this.status = '최종 불합격'
+          this.finalDesc = '최종 결과 안내'
+          this.message = `면접과정을 통과하지 못했습니다.\n\n다음번에 좋은 기회로 만날 수 있길 바랍니다.\n\n지원해주셔서 감사합니다.`
+          return;
+        } else {
+          this.status = '최종 합격'
+          this.finalDesc = '최종 결과 안내'
+          this.active = 3
+          this.docStatus = 'success'
+          this.interviewStatus = 'success'
+          this.finalStatus = 'success'
+          this.message = `최종 합격하였습니다. 축하합니다!\n\n발대식 및 오리엔테이션은 ${this.openingTime} , 한국창의과학재단 11층 스카이라운지에서 진행 될 예정입니다.\n\n감사합니다.`
+          return;
+        }
+      }).catch((e) => {
+        loading.close()
+        this.$notify.error({ message: "지원자 정보를 가져오는데 실패하였습니다."})
+      })
     },
     methods: {
       removeConfirm () {

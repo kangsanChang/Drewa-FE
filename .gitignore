@@ -13,3 +13,5 @@ src/config.js
 *.ntvs*
 *.njsproj
 *.sln
+
+\.vscode/

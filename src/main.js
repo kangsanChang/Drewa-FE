@@ -6,20 +6,22 @@ import store from './store'
 import VueRouter from 'vue-router'
 import { routes } from './routes'
 import { clone } from 'lodash'
+import moment from 'moment'
 
 Vue.use(ElementUI)
 Vue.use(VueRouter)
 
-Object.defineProperty(Vue.prototype, '$clone', {value: clone})
+Vue.prototype.clone = clone
+Vue.prototype.moment = moment
 
 const router = new VueRouter({
   mode: 'history',
-  routes,
+  routes
 })
 
 new Vue({
   store,
   router,
   el: '#app',
-  render: h => h(App),
+  render: h => h(App)
 })

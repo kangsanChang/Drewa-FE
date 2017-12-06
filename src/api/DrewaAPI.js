@@ -10,7 +10,7 @@ export default {
     return axios.post(BASE_URL + '/applicants', {
       userEmail: user.email,
       userPassword: user.password,
-      recaptchaToken,
+      recaptchaToken
     })
   },
   // 지원자 로그인
@@ -18,7 +18,7 @@ export default {
     return axios.post(BASE_URL + '/login', {
       userEmail: user.email,
       userPassword: user.password,
-      recaptchaToken,
+      recaptchaToken
     })
   },
   // application 접근 시 마운트 전 필요한 데이터 (면접 시간, season, 기타등등 가져오기)
@@ -57,7 +57,7 @@ export default {
       answers: userFormData.answers,
       devAnswers: userFormData.devAnswers,
       desAnswers: userFormData.desAnswers,
-      interviewAvailableTime: userFormData.interviewAvailableTimes,
+      interviewAvailableTime: userFormData.interviewAvailableTimes
     })
   },
   submitApplicantData (applicantIdx, token, userFormData) {
@@ -78,7 +78,11 @@ export default {
       answers: userFormData.answers,
       devAnswers: userFormData.devAnswers,
       desAnswers: userFormData.desAnswers,
-      interviewAvailableTime: userFormData.interviewAvailableTimes,
+      interviewAvailableTime: userFormData.interviewAvailableTimes
     })
   },
+  getApplicantStatus (applicantIdx, token) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+    return axios.get(BASE_URL + `/applicants/${applicantIdx}/status`)
+  }
 }

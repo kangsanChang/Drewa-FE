@@ -317,8 +317,8 @@
       },
       // Required Input Checker
       inputChecker () {
-        // 객체 복사
-        const requiredData = this.$clone(this.userFormData)
+        // 객체 복사(main.js 에서 vm에 직접 넣은 method 활용)
+        const requiredData = this.clone(this.userFormData)
         // not required.
         delete requiredData.personalUrl
         delete requiredData.applicantPortfolioUrl
