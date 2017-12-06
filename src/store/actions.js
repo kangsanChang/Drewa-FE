@@ -111,6 +111,18 @@ export default {
         })
     })
   },
+  'removeApplication': (store, payload) => {
+    return new Promise((resolve, reject) => {
+      API.removeApplication(store.state.applicantIdx, store.state.token)
+        .then((res) => {
+          if (res.status === 204) {
+            resolve()
+          }
+        }).catch((e) => {
+          reject(e)
+        })
+    })
+  },
   'getApplicantStatus': (store) => {
     return new Promise((resolve, reject) => {
       API.getApplicantStatus(store.state.applicantIdx, store.state.token)

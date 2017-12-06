@@ -134,10 +134,29 @@
           cancelButtonText: '아니오',
           type: 'warning',
         }).then(() => {
-          this.$message({
-            type: 'success',
-            message: '삭제 완료',
-          })
+          const loading = this.$loading({lock: true, text: '삭제 중'})
+          this.$store.dispatch('removeApplication')
+            .then(()=> {
+              loading.close()
+              sessionStorage.removeItem('user_token')
+              sessionStorage.removeItem('user_idx');
+              this.$router.push({name: 'intro'})
+              this.$message({
+                type: 'success',
+                message: '삭제 완료',
+              })
+            })
+            .catch((e) => {
+              loading.close()
+              if (e.response.status === 401) {
+                this.$router.push({name: 'login'})
+                this.$notify.info({
+                  title: '접속 시간 만료',
+                  message: '다시 로그인 해 주시기 바랍니다.',
+                })
+                return;
+              }
+            })
         }).catch(() => {
           this.$message({
             type: 'info',

@@ -39,9 +39,6 @@ export default {
   postApplicantData (applicantIdx, token, userFormData) {
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
 
-    // Server에서 처리하는 변수명과 일치하면 가능 함.
-    // return axios.post(BASE_URL + `/applicants/${applicantIdx}/application`, userFormData);
-    // 일단은 가능한 버전으로
     return axios.post(BASE_URL + `/applicants/${applicantIdx}/application`, {
       userName: userFormData.name,
       userPosition: userFormData.position,
@@ -59,6 +56,10 @@ export default {
       desAnswers: userFormData.desAnswers,
       interviewAvailableTime: userFormData.interviewAvailableTimes
     })
+  },
+  removeApplication (applicantIdx, token) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+    return axios.delete(BASE_URL + `/applicants/${applicantIdx}/application`)
   },
   submitApplicantData (applicantIdx, token, userFormData) {
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
