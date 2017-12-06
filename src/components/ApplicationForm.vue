@@ -355,6 +355,7 @@
             message: '프로필 사진은 jpg 또는 png 확장자여야 합니다.',
           })
           this.picLoading = false
+          return false;
         }
         if (!isLt3M) {
           this.$notify.error({
@@ -362,6 +363,7 @@
             message: '이미지는 3MB 이하여야 합니다.',
           })
           this.picLoading = false
+          return false;
         }
         return isImage && isLt3M
       },
@@ -400,12 +402,14 @@
             title: '잘못 된 형식!',
             message: '파일은 PDF 형식이어야 합니다.',
           })
+          return false;
         }
         if (!isLt15M) {
           this.$notify.error({
             title: '너무 큰 파일!',
             message: '파일은 15MB 이하여야 합니다.',
           })
+          return false;
         }
         return isPdf && isLt15M
       },
@@ -450,9 +454,7 @@
                 })
                 return
               }
-              this.$notify.error({
-                message: '파일 삭제 중 문제가 발생 하였습니다.',
-              })
+              return
             })
       },
       saveApplication () {
