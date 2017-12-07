@@ -2,18 +2,20 @@
 
 import Intro from './components/Intro.vue'
 import Join from './components/Join.vue'
-import Login from './components/Login.vue'
+import ApplicantLogin from './components/ApplicantLogin.vue'
 import Status from './components/ApplicantStatus.vue'
 import Form from './components/ApplicationForm.vue'
+import AdminLogin from './components/AdminLogin.vue'
 
 import store from './store'
 
 export const routes = [
   {path: '/', name: 'intro', component: Intro},
   {path: '/join', name: 'join', component: Join},
-  {path: '/login', name: 'login', component: Login},
+  {path: '/login', name: 'login', component: ApplicantLogin},
   {path: '/status', name: 'status', component: Status, beforeEnter: checkToken},
   {path: '/application', name: 'application', component: Form, beforeEnter: checkToken},
+  {path: '/test', name: 'adminLogin', component: AdminLogin}
 ]
 
 // es6 arrow function 스타일로 적으면 안먹힘!!
