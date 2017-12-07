@@ -134,12 +134,14 @@
           cancelButtonText: '아니오',
           type: 'warning',
         }).then(() => {
+          // Remove Applicant's all data
           const loading = this.$loading({lock: true, text: '삭제 중'})
           this.$store.dispatch('removeApplication')
             .then(()=> {
               loading.close()
               sessionStorage.removeItem('user_token')
               sessionStorage.removeItem('user_idx');
+              this.$store.dispatch('removeStoreData')
               this.$router.push({name: 'intro'})
               this.$message({
                 type: 'success',

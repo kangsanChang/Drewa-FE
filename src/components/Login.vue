@@ -39,6 +39,14 @@
         },
       }
     },
+    created(){
+      // sessionStorage 있으면 로그인 할 필요 없음.
+      if (sessionStorage.getItem('user_token')) {
+        this.$router.push({name: 'status'})
+        this.$store.state.token = sessionStorage.getItem('user_token')
+        this.$store.state.applicantIdx = sessionStorage.getItem('user_idx')
+      }
+    },
     methods: {
       // recaptchaResCb() {
       //     const recaptchaToken = grecaptcha.getResponse();

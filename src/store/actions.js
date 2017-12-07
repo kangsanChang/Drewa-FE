@@ -123,6 +123,9 @@ export default {
         })
     })
   },
+  'removeStoreData': (store) => {
+    store.commit('removeApplicantInfo')
+  },
   'getApplicantStatus': (store) => {
     return new Promise((resolve, reject) => {
       API.getApplicantStatus(store.state.applicantIdx, store.state.token)
