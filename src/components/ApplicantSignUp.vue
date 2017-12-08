@@ -49,7 +49,7 @@
 
   import vHeader from './header.vue' // template 내부에서는 kebab case (-) 로 바꿔줘야 함
   export default {
-    name: 'join',
+    name: 'ApplicantSignUp',
     components: {vHeader},
     data () {
       // async validator document 참고 : https://github.com/yiminghe/async-validator

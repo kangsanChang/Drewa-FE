@@ -6,7 +6,7 @@ const BASE_URL = '/api'
 
 export default {
   // 지원자 가입
-  addApplicant (user, recaptchaToken) {
+  applicantSignUp (user, recaptchaToken) {
     return axios.post(BASE_URL + '/applicants', {
       userEmail: user.email,
       userPassword: user.password,
@@ -18,6 +18,17 @@ export default {
     return axios.post(BASE_URL + '/login', {
       userEmail: user.email,
       userPassword: user.password,
+      recaptchaToken
+    })
+  },
+  // 면접관 가입
+  interviewerSignUp (user, recaptchaToken) {
+    return axios.post(BASE_URL + '/interviewer', {
+      userEmail: user.email,
+      userPassword: user.password,
+      userName: user.name,
+      userPosition: user.position,
+      invitationCode: user.invitation_code,
       recaptchaToken
     })
   },

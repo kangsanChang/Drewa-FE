@@ -59,9 +59,9 @@ export default {
             this.$notify.success({title: '성공', message: '로그인에 성공 하였습니다.'})
           })
           .catch((e) => {
-            if (e.msg === 'Email not exist') {
+            if (e === 'userEmail not exist') {
               this.$notify.error({title: '오류', message: '계정이 존재하지 않습니다.'})
-            } else if (e.msg === 'Password not match') {
+            } else if (e === 'password not matching') {
               this.$notify.error({title: '오류', message: '패스워드가 일치하지 않습니다.'})
             } else {
               console.log(e)

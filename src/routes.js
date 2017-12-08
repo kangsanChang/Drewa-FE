@@ -1,21 +1,23 @@
 // 라우팅 할 컴포넌트만 가져오면 된다.
 
 import Intro from './components/Intro.vue'
-import Join from './components/Join.vue'
+import ApplicantSignUp from './components/ApplicantSignUp.vue'
 import ApplicantLogin from './components/ApplicantLogin.vue'
 import Status from './components/ApplicantStatus.vue'
 import Form from './components/ApplicationForm.vue'
-import AdminLogin from './components/AdminLogin.vue'
+import InterviewerSignUp from './components/InterviewerSignUp.vue'
+import InterviewerLogin from './components/InterviewerLogin.vue'
 
 import store from './store'
 
 export const routes = [
   {path: '/', name: 'intro', component: Intro},
-  {path: '/join', name: 'join', component: Join},
+  {path: '/signup', name: 'signup', component: ApplicantSignUp},
   {path: '/login', name: 'login', component: ApplicantLogin},
   {path: '/status', name: 'status', component: Status, beforeEnter: checkToken},
   {path: '/application', name: 'application', component: Form, beforeEnter: checkToken},
-  {path: '/test', name: 'adminLogin', component: AdminLogin}
+  {path: '/test', name: 'InterviewerLogin', component: InterviewerLogin},
+  {path: '/iv-signup', name: 'iv-signup', component: InterviewerSignUp}
 ]
 
 // es6 arrow function 스타일로 적으면 안먹힘!!

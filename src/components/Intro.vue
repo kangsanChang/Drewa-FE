@@ -15,7 +15,7 @@
           <div class="buttons-wrapper">
             <div class="buttons">
               <a href="/login" class="button" id="find-btn">지원서 조회</a>
-              <a href="/join" class="button" id="create-btn">신규 작성</a>
+              <a href="/signup" class="button" id="create-btn">신규 작성</a>
             </div>
           </div>
         </div>
