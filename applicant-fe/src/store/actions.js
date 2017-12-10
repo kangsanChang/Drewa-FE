@@ -18,10 +18,10 @@ export default {
           // 400 대로 오면 여기로 오는 듯
           const err = e.response.data
           if (err.msg === 'User Already Exists') {
-            reject('duplicated')
+            reject(new Error('duplicated'))
           }
           console.log('error occour in action ', err)
-          reject('fail')
+          reject(new Error('somethingWorng'))
         })
     })
   },
@@ -37,8 +37,7 @@ export default {
           resolve()
         })
         .catch((e) => {
-          const err = e.response.data
-          reject(err)
+          reject(e)
         })
     })
   },

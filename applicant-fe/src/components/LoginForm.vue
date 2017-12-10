@@ -51,7 +51,6 @@ export default {
         this.$notify.error({message: '이메일, 비밀번호를 다 채운 후 조회하세요.', title: '오류'})
         return
       } else {
-        if(this.type==='applicant'){
         this.$store.dispatch('loginApplicant', {loginForm: this.loginForm})
           .then((res) => {
             this.$router.push({name: 'status'})
@@ -66,11 +65,6 @@ export default {
               console.log(e)
             }
           })
-        } else {
-          // TODO: 면접관 login dispatch 만들어야 함
-          // 면접관 대쉬보드로 이동해야함.
-          // this.$router.push({name: ''})
-        }
       }
     },
   },

@@ -191,7 +191,7 @@
                 this.$notify.success({title: '가입 완료', message: '가입이 성공적으로 완료 되었습니다.'})
               })
               .catch((e) => {
-                if (e === 'duplicated') {
+                if (e.message === 'duplicated') {
                   this.emailDuplicatedError()
                   loading.close()
                 } else {

@@ -15,5 +15,13 @@ export default {
       invitationCode: user.invitation_code,
       recaptchaToken
     })
+  },
+  // 면접관 로그인
+  interviewerLogin (user, recaptchaToken) {
+    return axios.post(BASE_URL + '/login', {
+      userEmail: user.email,
+      userPassword: user.password,
+      recaptchaToken
+    })
   }
 }

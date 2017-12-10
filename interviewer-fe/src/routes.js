@@ -2,13 +2,14 @@
 
 import InterviewerSignUp from './components/InterviewerSignUp.vue'
 import InterviewerLogin from './components/InterviewerLogin.vue'
+import Dashboard from './components/Dashboard.vue'
 
 import store from './store'
 
 export const routes = [
   {path: '/', name: 'InterviewerLogin', component: InterviewerLogin},
   {path: '/signup', name: 'signup', component: InterviewerSignUp},
-  {path: '/summary', name: 'summary', beforeEnter: checkToken}
+  {path: '/summary', name: 'summary', component: Dashboard, beforeEnter: checkToken}
 ]
 
 // es6 arrow function 스타일로 적으면 안먹힘!!

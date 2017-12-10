@@ -23,5 +23,22 @@ export default {
           }
         })
     })
+  },
+  'loginInterviewer': (store, payload) => {
+    return new Promise((resolve, reject) => {
+      API.interviewerLogin(payload.loginForm, payload.recaptchaToken)
+        .then((res) => {
+          const data = res.data.data
+          const commitData = { token: data.token, interviewerIdx: data.interviewerIdx }
+          store.commit('createInterviewerInfo', commitData)
+          sessionStorage.setItem('user_token', data.token)
+          sessionStorage.setItem('user_idx', data.interviewerIdx)
+          resolve()
+        })
+        .catch((e) => {
+          const err = e.response.data
+          reject(err)
+        })
+    })
   }
 }

@@ -49,9 +49,20 @@ export default {
         this.$notify.error({message: '이메일, 비밀번호를 다 채운 후 조회하세요.', title: '오류'})
         return
       } else {
-        // TODO: 면접관 login dispatch 만들어야 함
-        // 면접관 대쉬보드로 이동해야함.
-        // this.$router.push({name: ''})
+        this.$store.dispatch('loginInterviewer', {loginForm: this.loginForm})
+        .then((res) => {
+          this.$router.push({name: 'summary'})
+          this.$notify.success({title: '성공', message: '로그인에 성공 하였습니다.'})
+        })
+        .catch((e) => {
+          if (e === 'userEmail not exist') {
+            this.$notify.error({title: '오류', message: '계정이 존재하지 않습니다.'})
+          } else if (e === 'password not matching') {
+            this.$notify.error({title: '오류', message: '패스워드가 일치하지 않습니다.'})
+          } else {
+            console.log(e)
+          }
+        })
       }
     },
   },
