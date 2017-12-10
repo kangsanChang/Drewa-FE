@@ -3,7 +3,7 @@
     <background-video></background-video>
     <div id="login-container">
       <h1 align="center">디프만 지원 평가 시스템</h1>
-      <login-form title='면접관 로그인' type='interviewer'></login-form>
+      <login-form title='면접관 로그인'></login-form>
     </div>
   </div>
 </template>
@@ -14,7 +14,7 @@
 
   export default {
     name: 'interviewerLogin',
-    components: {backgroundVideo, loginForm}
+    components: {backgroundVideo, loginForm},
   }
 </script>
 

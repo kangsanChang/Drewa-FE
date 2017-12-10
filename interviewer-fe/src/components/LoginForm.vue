@@ -1,9 +1,8 @@
 <template>
-  <div id="login-box" :class="type">
+  <div id="login-box">
     <h3>{{ title }}</h3>
     <div id="input-box">
-      <span v-if="type==='applicant'" class="info">신규 지원서 작성 시 입력했던 정보를 입력해 주세요.</span>
-      <span v-else class="info">로그인을 위해 아래 정보를 입력해 주세요.</span>
+      <span class="info">로그인을 위해 아래 정보를 입력해 주세요.</span>
       <el-form id="login-form" :model="loginForm" ref="loginForm">
         <el-form-item>
           <el-input id="email-input" type="text" placeholder="이메일" v-model="loginForm.email"></el-input>
@@ -11,13 +10,12 @@
         <el-form-item>
           <el-input id="password-input" type="password" placeholder="비밀번호" v-model="loginForm.password"></el-input>
         </el-form-item>
-        <span v-if="type==='applicant'">
-          등록된 이메일/비밀번호가 없거나 잊어버린 경우
-          <el-button type="text" @click="contactUs"><u>문의하기</u></el-button>
+        <span>
+          아직 가입하지 않았다면?
+          <a href="/signup">가입하기</a>
         </span>
         <el-form-item id="submit-box">
-          <el-button v-if="type==='applicant'" class="submit" @click="submitForm">조회</el-button>
-          <el-button v-else class="submit" @click="submitForm">로그인</el-button>
+          <el-button class="submit" @click="submitForm">로그인</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -28,7 +26,6 @@
 export default {
   props: {
     title : { type:String, required:true },
-    type : { type:String, required:true }, // applicant or interviewer
   },
   name: 'loginForm',
   data () {
@@ -52,26 +49,9 @@ export default {
         this.$notify.error({message: '이메일, 비밀번호를 다 채운 후 조회하세요.', title: '오류'})
         return
       } else {
-        if(this.type==='applicant'){
-        this.$store.dispatch('loginApplicant', {loginForm: this.loginForm})
-          .then((res) => {
-            this.$router.push({name: 'status'})
-            this.$notify.success({title: '성공', message: '로그인에 성공 하였습니다.'})
-          })
-          .catch((e) => {
-            if (e === 'userEmail not exist') {
-              this.$notify.error({title: '오류', message: '계정이 존재하지 않습니다.'})
-            } else if (e === 'password not matching') {
-              this.$notify.error({title: '오류', message: '패스워드가 일치하지 않습니다.'})
-            } else {
-              console.log(e)
-            }
-          })
-        } else {
-          // TODO: 면접관 login dispatch 만들어야 함
-          // 면접관 대쉬보드로 이동해야함.
-          // this.$router.push({name: ''})
-        }
+        // TODO: 면접관 login dispatch 만들어야 함
+        // 면접관 대쉬보드로 이동해야함.
+        // this.$router.push({name: ''})
       }
     },
   },
@@ -80,12 +60,7 @@ export default {
 
 <style lang="scss" scoped>
   #login-box {
-    &.interviewer {
-      background: rgba(255,255,255,0.5)
-    }
-    &.applicant {
-      background-color: white;
-    }
+    background: rgba(255,255,255,0.5);
     padding: 40px 40px 30px 40px;
     margin-top: 100px;
     h3 {
@@ -105,7 +80,7 @@ export default {
         span {
           font-size: 10px;
         }
-        button.el-button--text {
+        span a{
           margin-left: 5px;
           font-size: 12px;
           color: #FF8E7F;

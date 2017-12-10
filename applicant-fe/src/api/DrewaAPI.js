@@ -21,17 +21,6 @@ export default {
       recaptchaToken
     })
   },
-  // 면접관 가입
-  interviewerSignUp (user, recaptchaToken) {
-    return axios.post(BASE_URL + '/interviewer', {
-      userEmail: user.email,
-      userPassword: user.password,
-      userName: user.name,
-      userPosition: user.position,
-      invitationCode: user.invitation_code,
-      recaptchaToken
-    })
-  },
   // application 접근 시 마운트 전 필요한 데이터 (면접 시간, season, 기타등등 가져오기)
   getApplicationSetting (token) {
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`

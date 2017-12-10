@@ -151,12 +151,7 @@
             this.formError()
             return
           }
-          // check reCAPTCHA
-          // grecaptcha.getResponse() : reCAPTCHA 가 만들어낸 code. 서버에서 검증
-          // 여러 개의 폼을 검증 할 경우 () 안에 key 값 적어준다. 안적으면 첫번재 리캡챠만 가능.
           try {
-            // 에러 검사하기 위해서만 사용
-            // block 밖에서도 변수 사용하므로 var 로 선언
             var recaptchaToken = grecaptcha.getResponse()
           } catch (error) {
             this.notExistRecaptchaError()
@@ -174,26 +169,23 @@
             text: '전송 중',
           })
           this.$store.dispatch('interviewerSignUp', {userInfo: this.userInfo, recaptchaToken})
-              .then((res) => {
-                // Store에 토큰하고 applicantIdx 저장까지 된 회원 가입 성공 시
-                // 작성 페이지로 redirect 할 예정
-                // 현재 로그인 후 초기 화면으로 잘 가는지 테스트. 나중에 변경해야 함
-                this.$router.push({name: 'InterviewerLogin'})
+            .then((res) => {
+              this.$router.push({name: 'InterviewerLogin'})
+              loading.close()
+              this.$notify.success({title: '가입 완료', message: '가입이 성공적으로 완료 되었습니다.'})
+            })
+            .catch((e) => {
+              if (e.message === 'duplicated') {
+                this.emailDuplicatedError()
                 loading.close()
-                this.$notify.success({title: '가입 완료', message: '가입이 성공적으로 완료 되었습니다.'})
-              })
-              .catch((e) => {
-                if (e.message === 'duplicated') {
-                  this.emailDuplicatedError()
-                  loading.close()
-                } else if(e.message === 'wrongCode'){
-                  this.invitationCodeError()
-                  loading.close()
-                } else {
-                  console.log('something failed : ', e)
-                  loading.close()
-                }
-              })
+              } else if(e.message === 'wrongCode'){
+                this.invitationCodeError()
+                loading.close()
+              } else {
+                console.log('something failed : ', e)
+                loading.close()
+              }
+            })
         })
       },
     },

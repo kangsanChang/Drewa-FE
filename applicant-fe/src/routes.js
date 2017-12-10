@@ -5,8 +5,6 @@ import ApplicantSignUp from './components/ApplicantSignUp.vue'
 import ApplicantLogin from './components/ApplicantLogin.vue'
 import Status from './components/ApplicantStatus.vue'
 import Form from './components/ApplicationForm.vue'
-import InterviewerSignUp from './components/InterviewerSignUp.vue'
-import InterviewerLogin from './components/InterviewerLogin.vue'
 
 import store from './store'
 
@@ -15,9 +13,7 @@ export const routes = [
   {path: '/signup', name: 'signup', component: ApplicantSignUp},
   {path: '/login', name: 'login', component: ApplicantLogin},
   {path: '/status', name: 'status', component: Status, beforeEnter: checkToken},
-  {path: '/application', name: 'application', component: Form, beforeEnter: checkToken},
-  {path: '/test', name: 'InterviewerLogin', component: InterviewerLogin},
-  {path: '/iv-signup', name: 'iv-signup', component: InterviewerSignUp}
+  {path: '/application', name: 'application', component: Form, beforeEnter: checkToken}
 ]
 
 // es6 arrow function 스타일로 적으면 안먹힘!!
