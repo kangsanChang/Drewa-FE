@@ -2,7 +2,6 @@
   <div id="login-box">
     <h3>{{ title }}</h3>
     <div id="input-box">
-      <span class="info">신규 지원서 작성 시 입력했던 정보를 입력해 주세요.</span>
       <span class="info">로그인을 위해 아래 정보를 입력해 주세요.</span>
       <el-form id="login-form" :model="loginForm" ref="loginForm">
         <el-form-item>
@@ -17,7 +16,6 @@
         </span>
         <el-form-item id="submit-box">
           <el-button class="submit" @click="submitForm">조회</el-button>
-          <el-button class="submit" @click="submitForm">로그인</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -52,19 +50,21 @@ export default {
         return
       } else {
         this.$store.dispatch('loginApplicant', {loginForm: this.loginForm})
-          .then((res) => {
-            this.$router.push({name: 'status'})
-            this.$notify.success({title: '성공', message: '로그인에 성공 하였습니다.'})
-          })
-          .catch((e) => {
-            if (e === 'userEmail not exist') {
-              this.$notify.error({title: '오류', message: '계정이 존재하지 않습니다.'})
-            } else if (e === 'password not matching') {
-              this.$notify.error({title: '오류', message: '패스워드가 일치하지 않습니다.'})
-            } else {
-              console.log(e)
-            }
-          })
+        .then((res) => {
+          this.$router.push({name: 'status'})
+          this.$notify.success({title: '성공', message: '로그인에 성공 하였습니다.'})
+        })
+        .catch((e) => {
+          if (e === 'userEmail not exist') {
+            this.$notify.error({title: '오류', message: '계정이 존재하지 않습니다.'})
+          } else if (e === 'password not matching') {
+            this.$notify.error({title: '오류', message: '패스워드가 일치하지 않습니다.'})
+          } else  if (e.message === 'no User'){
+            this.$notify.error({title: '오류', message: '지원자가 아닙니다.'})
+          } else {
+            console.log(e)
+          }
+        })
       }
     },
   },

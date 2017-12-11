@@ -59,6 +59,8 @@ export default {
             this.$notify.error({title: '오류', message: '계정이 존재하지 않습니다.'})
           } else if (e === 'password not matching') {
             this.$notify.error({title: '오류', message: '패스워드가 일치하지 않습니다.'})
+          } else  if (e.message === 'no User'){
+            this.$notify.error({title: '오류', message: '면접관이 아닙니다.'})
           } else {
             console.log(e)
           }

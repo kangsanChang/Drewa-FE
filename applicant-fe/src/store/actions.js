@@ -30,6 +30,9 @@ export default {
       API.applicantLogin(payload.loginForm, payload.recaptchaToken)
         .then((res) => {
           const data = res.data.data
+          if (data.applicantIdx === undefined) {
+            return reject(new Error('no User'))
+          }
           const commitData = { token: data.token, applicantIdx: data.applicantIdx }
           store.commit('createApplicantInfo', commitData)
           sessionStorage.setItem('user_token', data.token)
@@ -37,7 +40,8 @@ export default {
           resolve()
         })
         .catch((e) => {
-          reject(e)
+          const err = e.response.data
+          reject(err)
         })
     })
   },

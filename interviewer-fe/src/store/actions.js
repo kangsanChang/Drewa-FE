@@ -29,6 +29,9 @@ export default {
       API.interviewerLogin(payload.loginForm, payload.recaptchaToken)
         .then((res) => {
           const data = res.data.data
+          if (data.interviewerIdx === undefined) {
+            return reject(new Error('no User'))
+          }
           const commitData = { token: data.token, interviewerIdx: data.interviewerIdx }
           store.commit('createInterviewerInfo', commitData)
           sessionStorage.setItem('user_token', data.token)
