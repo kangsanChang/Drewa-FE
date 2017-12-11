@@ -21,7 +21,7 @@ export default {
   #video-container {
     width: 100%;
     height: 100%;
-    overflow: hidden;    
+    overflow: hidden;
   }
   #video-container video {
     position: fixed; right: 0; bottom: 0;
