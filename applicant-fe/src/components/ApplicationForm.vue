@@ -2,148 +2,269 @@
   <div id="container">
     <div id="contents-wrapper">
       <v-header :title="title"></v-header>
-      <div id="basic-info-wrapper" class="wrapper">
-        <h3 class="wrapper-title">기본 인적사항</h3>
-        <div id="basic-info-box" class="box">
-          <el-form :model="userFormData">
-            <el-form-item id="name">
-              <el-input v-model="userFormData.name" placeholder="이름"></el-input>
-            </el-form-item>
-            <el-form-item id="gender" class="selector">
-              <el-select v-model="userFormData.gender" placeholder="성별">
-                <el-option label="남자" value="M"></el-option>
-                <el-option label="여자" value="F"></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item id="birth" class="half endcol">
-              <el-input v-model="userFormData.birth" placeholder="생년월일 (YYMMDD)"></el-input>
-            </el-form-item>
-            <el-form-item id="residence" class="half">
-              <el-input v-model="userFormData.residence" placeholder="현 거주지 (시/도, 군/구)"></el-input>
-            </el-form-item>
-            <el-form-item id="phone" class="half endcol">
-              <el-input v-model="userFormData.phone" placeholder="휴대전화 ( - 없이 입력)"></el-input>
-            </el-form-item>
-            <el-form-item id="company" class="half">
-              <el-input v-model="userFormData.company" placeholder="소속"></el-input>
-            </el-form-item>
-            <el-form-item id="major" class="half endcol">
-              <el-input v-model="userFormData.major" placeholder="전공"></el-input>
-            </el-form-item>
-            <el-form-item id="position" class="selector">
-              <el-select v-model="userFormData.position" placeholder="지원분야">
-                <el-option label="디자이너" value="designer"></el-option>
-                <el-option label="개발자" value="developer"></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item id="knownFrom" class="endcol">
-              <el-input v-model="userFormData.knownFrom" placeholder="모집 공고를 어디서 보았나요?"></el-input>
-            </el-form-item>
-            <el-form-item id="personalUrl" class="full endcol">
-              <el-input v-model="userFormData.personalUrl"
-                        placeholder="(선택사항) 블로그 or GitHub or 홈페이지 URL"></el-input>
-            </el-form-item>
-          </el-form>
+      <div v-if="userFormData.isSubmit===false" id="application-form-wrapper">
+        <div id="basic-info-wrapper" class="wrapper">
+          <h3 class="wrapper-title">기본 인적사항</h3>
+          <div id="basic-info-box" class="box">
+            <el-form :model="userFormData">
+              <el-form-item id="name">
+                <el-input v-model="userFormData.name" placeholder="이름"></el-input>
+              </el-form-item>
+              <el-form-item id="gender" class="selector">
+                <el-select v-model="userFormData.gender" placeholder="성별">
+                  <el-option label="남자" value="M"></el-option>
+                  <el-option label="여자" value="F"></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item id="birth" class="half endcol">
+                <el-input v-model="userFormData.birth" placeholder="생년월일 (YYMMDD)"></el-input>
+              </el-form-item>
+              <el-form-item id="residence" class="half">
+                <el-input v-model="userFormData.residence" placeholder="현 거주지 (시/도, 군/구)"></el-input>
+              </el-form-item>
+              <el-form-item id="phone" class="half endcol">
+                <el-input v-model="userFormData.phone" placeholder="휴대전화 ( - 없이 입력)"></el-input>
+              </el-form-item>
+              <el-form-item id="company" class="half">
+                <el-input v-model="userFormData.company" placeholder="소속"></el-input>
+              </el-form-item>
+              <el-form-item id="major" class="half endcol">
+                <el-input v-model="userFormData.major" placeholder="전공"></el-input>
+              </el-form-item>
+              <el-form-item id="position" class="selector">
+                <el-select v-model="userFormData.position" placeholder="지원분야">
+                  <el-option label="디자이너" value="designer"></el-option>
+                  <el-option label="개발자" value="developer"></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item id="knownFrom" class="endcol">
+                <el-input v-model="userFormData.knownFrom" placeholder="모집 공고를 어디서 보았나요?"></el-input>
+              </el-form-item>
+              <el-form-item id="personalUrl" class="full endcol">
+                <el-input v-model="userFormData.personalUrl"
+                          placeholder="(선택사항) 블로그 or GitHub or 홈페이지 URL"></el-input>
+              </el-form-item>
+            </el-form>
+          </div>
+          <div id="photo-box">
+            <div id="photo-upload-box" class="box">
+              <el-upload
+                :disabled="userFormData.isSubmit"
+                v-loading="picLoading"
+                name="user_image"
+                class="avatar-uploader"
+                :headers="authorizationHeader"
+                :action="pictureUploadUrl"
+                :show-file-list="false"
+                :on-success="uploadPictureSuccess"
+                :before-upload="beforePictureUpload"
+                :on-error="uploadFail"
+              >
+                <img v-if="userFormData.applicantImageUrl" :src="userFormData.applicantImageUrl"
+                    class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+              </el-upload>
+            </div>
+            <div id="picture-upload-desc">프로필 사진<br>(jpg, png 최대 3MB)</div>
+          </div>
         </div>
-        <div id="photo-box">
-          <div id="photo-upload-box" class="box">
+        <div id="cover-letter-wrapper" class="wrapper">
+          <h3 class="wrapper-title">자기소개서</h3>
+          <div v-for="(question, index) in setApplicationData.questions.commonQ" :key="index"
+              class="text-box">
+            <h4 class="title">{{index + 1}}. {{ question }}</h4>
+            <el-input
+              type="textarea"
+              resize="none"
+              :rows="15"
+              v-model="userFormData.answers[index]"
+            >
+            </el-input>
+          </div>
+          <div v-if="userFormData.position==='developer'">
+            <div v-for="(question, index) in setApplicationData.questions.devQ" :key="index"
+                class="text-box">
+              <h4 class="title">{{index + setApplicationData.questions.commonQ.length +
+              1}}. {{ question }}</h4>
+              <el-input
+                type="textarea"
+                resize="none"
+                :rows="15"
+                v-model="userFormData.devAnswers[index]"
+              >
+              </el-input>
+            </div>
+          </div>
+          <div v-if="userFormData.position==='designer'">
+            <div v-for="(question, index) in setApplicationData.questions.desQ" :key="index"
+                class="text-box">
+              <h4 class="title">{{index + setApplicationData.questions.commonQ.length +
+              1}}. {{ question }}</h4>
+              <el-input
+                type="textarea"
+                resize="none"
+                :rows="15"
+                v-model="userFormData.desAnswers[index]"
+              >
+              </el-input>
+            </div>
+          </div>
+        </div>
+        <div id="attached-document-wrapper" class="wrapper">
+          <h3 class="wrapper-title">첨부 자료</h3>
+          <span class="subtitle">(선택사항) 추가 자료나 포트폴리오를 첨부해 주세요.</span>
+          <div id="portfolio-upload-box">
             <el-upload
               :disabled="userFormData.isSubmit"
-              v-loading="picLoading"
-              name="user_image"
-              class="avatar-uploader"
+              name="user_portfolio"
+              class="upload-portfolio"
               :headers="authorizationHeader"
-              :action="pictureUploadUrl"
-              :show-file-list="false"
-              :on-success="uploadPictureSuccess"
-              :before-upload="beforePictureUpload"
+              :action="portfolioUploadUrl"
+              :before-upload="beforeFileUpload"
+              :on-success="uploadFileSuccess"
+              :limit="1"
+              :on-exceed="handleFileLimitexceed"
+              :file-list="fileList"
+              :on-preview="handleFilePreview"
+              :on-remove="handleFileRemove"
               :on-error="uploadFail"
             >
-              <img v-if="userFormData.applicantImageUrl" :src="userFormData.applicantImageUrl"
-                   class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+              <el-button size="small" type="primary">파일 업로드</el-button>
+              <div slot="tip" class="el-upload__tip">15MB 이하의 PDF파일</div>
             </el-upload>
           </div>
-          <div id="picture-upload-desc">프로필 사진<br>(jpg, png 최대 3MB)</div>
         </div>
-      </div>
-      <div id="cover-letter-wrapper" class="wrapper">
-        <h3 class="wrapper-title">자기소개서</h3>
-        <div v-for="(question, index) in setApplicationData.questions.commonQ" :key="index"
-             class="text-box">
-          <h4 class="title">{{index + 1}}. {{ question }}</h4>
-          <el-input
-            type="textarea"
-            resize="none"
-            :rows="15"
-            v-model="userFormData.answers[index]"
-          >
-          </el-input>
-        </div>
-        <div v-if="userFormData.position==='developer'">
-          <div v-for="(question, index) in setApplicationData.questions.devQ" :key="index"
-               class="text-box">
-            <h4 class="title">{{index + setApplicationData.questions.commonQ.length +
-            1}}. {{ question }}</h4>
-            <el-input
-              type="textarea"
-              resize="none"
-              :rows="15"
-              v-model="userFormData.devAnswers[index]"
-            >
-            </el-input>
-          </div>
-        </div>
-        <div v-if="userFormData.position==='designer'">
-          <div v-for="(question, index) in setApplicationData.questions.desQ" :key="index"
-               class="text-box">
-            <h4 class="title">{{index + setApplicationData.questions.commonQ.length +
-            1}}. {{ question }}</h4>
-            <el-input
-              type="textarea"
-              resize="none"
-              :rows="15"
-              v-model="userFormData.desAnswers[index]"
-            >
-            </el-input>
+        <div id="interview-time-wrapper" class="wrapper">
+          <h3 class="wrapper-title">면접 시간 선택</h3>
+          <span class="subtitle">면접 가능한 시간을 <u>모두</u> 선택해 주세요.</span>
+          <div v-for="(interviewDay, index) in setApplicationData.interviewTimes" :key="index"
+              class="interview-select-box">
+            <span>{{interviewDay.date}}</span>
+            <el-checkbox-group v-model="userFormData.interviewAvailableTimes">
+              <el-checkbox v-for="(time, index) in interviewDay.times" :key="index"
+                          :label="interviewDay.date+'-'+time" border>{{time}}
+              </el-checkbox>
+            </el-checkbox-group>
           </div>
         </div>
       </div>
-      <div id="attached-document-wrapper" class="wrapper">
-        <h3 class="wrapper-title">첨부 자료</h3>
-        <span class="subtitle">(선택사항) 추가 자료나 포트폴리오를 첨부해 주세요.</span>
-        <div id="portfolio-upload-box">
-          <el-upload
-            :disabled="userFormData.isSubmit"
-            name="user_portfolio"
-            class="upload-portfolio"
-            :headers="authorizationHeader"
-            :action="portfolioUploadUrl"
-            :before-upload="beforeFileUpload"
-            :on-success="uploadFileSuccess"
-            :limit="1"
-            :on-exceed="handleFileLimitexceed"
-            :file-list="fileList"
-            :on-preview="handleFilePreview"
-            :on-remove="handleFileRemove"
-            :on-error="uploadFail"
-          >
-            <el-button size="small" type="primary">파일 업로드</el-button>
-            <div slot="tip" class="el-upload__tip">15MB 이하의 PDF파일</div>
-          </el-upload>
+      <div v-else id="submitted-application-wrapper">
+        <div id="basic-info-wrapper" class="wrapper">
+          <h3 class="wrapper-title">기본 인적사항</h3>
+          <div id="basic-info-box" class="box">
+              <div id="name" class="submitted-form-box">
+                <span>{{ userFormData.name }}</span>
+              </div>
+              <div id="gender" class="selector submitted-form-box">
+                <span>{{ this.korGender }}</span>
+              </div>
+              <div id="birth" class="half endcol submitted-form-box">
+                <span>{{ this.userFormData.birth }}</span>
+              </div>
+              <div id="residence" class="half submitted-form-box">
+                <span>{{ this.userFormData.residence }}</span>
+              </div>
+              <div id="phone" class="half endcol submitted-form-box">
+                <span>{{ this.userFormData.phone }}</span>
+              </div>
+              <div id="company" class="half submitted-form-box">
+                <span>{{ this.userFormData.company }}</span>
+              </div>
+              <div id="major" class="half endcol submitted-form-box">
+                <span>{{ this.userFormData.major }}</span>
+              </div>
+              <div id="position" class="selector submitted-form-box">
+                <span>{{ this.korPosition }}</span>
+              </div>
+              <div id="knownFrom" class="endcol submitted-form-box">
+                <span>{{ this.userFormData.knownFrom }}</span>
+              </div>
+              <div id="personalUrl" class="full endcol submitted-form-box">
+                <span>{{ this.userFormData.personalUrl }}</span>
+              </div>
+          </div>
+          <div id="photo-box">
+            <div id="photo-upload-box" class="box">
+              <el-upload
+                :disabled="userFormData.isSubmit"
+                v-loading="picLoading"
+                name="user_image"
+                class="avatar-uploader"
+                :headers="authorizationHeader"
+                :action="pictureUploadUrl"
+                :show-file-list="false"
+                :on-success="uploadPictureSuccess"
+                :before-upload="beforePictureUpload"
+                :on-error="uploadFail"
+              >
+                <img v-if="userFormData.applicantImageUrl" :src="userFormData.applicantImageUrl"
+                    class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+              </el-upload>
+            </div>
+            <div id="picture-upload-desc">프로필 사진<br>(jpg, png 최대 3MB)</div>
+          </div>
         </div>
-      </div>
-      <div id="interview-time-wrapper" class="wrapper">
-        <h3 class="wrapper-title">면접 시간 선택</h3>
-        <span class="subtitle">면접 가능한 시간을 <u>모두</u> 선택해 주세요.</span>
-        <div v-for="(interviewDay, index) in setApplicationData.interviewTimes" :key="index"
-             class="interview-select-box">
-          <span>{{interviewDay.date}}</span>
-          <el-checkbox-group v-model="userFormData.interviewAvailableTimes">
-            <el-checkbox v-for="(time, index) in interviewDay.times" :key="index"
-                         :label="interviewDay.date+'-'+time" border>{{time}}
-            </el-checkbox>
-          </el-checkbox-group>
+        <div id="cover-letter-wrapper" class="wrapper">
+          <h3 class="wrapper-title">자기소개서</h3>
+          <div v-for="(question, index) in setApplicationData.questions.commonQ" :key="index"
+              class="text-box">
+            <h4 class="title">{{index + 1}}. {{ question }}</h4>
+            <p class="answer-text-box">{{ userFormData.answers[index] }}</p>
+          </div>
+          <div v-if="userFormData.position==='developer'">
+            <div v-for="(question, index) in setApplicationData.questions.devQ" :key="index"
+                class="text-box">
+              <h4 class="title">{{index + setApplicationData.questions.commonQ.length +
+              1}}. {{ question }}</h4>
+              <p class="answer-text-box">{{ userFormData.devAnswers[index] }}</p>
+            </div>
+          </div>
+          <div v-if="userFormData.position==='designer'">
+            <div v-for="(question, index) in setApplicationData.questions.desQ" :key="index"
+                class="text-box">
+              <h4 class="title">{{index + setApplicationData.questions.commonQ.length +
+              1}}. {{ question }}</h4>
+              <p class="answer-text-box">{{ userFormData.desAnswers[index] }}</p>
+            </div>
+          </div>
+        </div>
+        <div id="attached-document-wrapper" class="wrapper">
+          <h3 class="wrapper-title">첨부 자료</h3>
+          <span class="subtitle">(선택사항) 추가 자료나 포트폴리오를 첨부해 주세요.</span>
+          <div id="portfolio-upload-box">
+            <el-upload
+              :disabled="userFormData.isSubmit"
+              name="user_portfolio"
+              class="upload-portfolio"
+              :headers="authorizationHeader"
+              :action="portfolioUploadUrl"
+              :before-upload="beforeFileUpload"
+              :on-success="uploadFileSuccess"
+              :limit="1"
+              :on-exceed="handleFileLimitexceed"
+              :file-list="fileList"
+              :on-preview="handleFilePreview"
+              :on-remove="handleFileRemove"
+              :on-error="uploadFail"
+            >
+              <el-button size="small" type="primary">파일 업로드</el-button>
+              <div slot="tip" class="el-upload__tip">15MB 이하의 PDF파일</div>
+            </el-upload>
+          </div>
+        </div>
+        <div id="interview-time-wrapper" class="wrapper">
+          <h3 class="wrapper-title">면접 시간 선택</h3>
+          <span class="subtitle">면접 가능한 시간을 <u>모두</u> 선택해 주세요.</span>
+          <div v-for="(interviewDay, index) in setApplicationData.interviewTimes" :key="index"
+              class="interview-select-box">
+            <span>{{interviewDay.date}}</span>
+            <el-checkbox-group v-model="userFormData.interviewAvailableTimes" disabled>
+              <el-checkbox v-for="(time, index) in interviewDay.times" :key="index"
+                          :label="interviewDay.date+'-'+time" border v-if="userFormData.interviewAvailableTimes.includes(interviewDay.date+'-'+time)">{{time}}
+              </el-checkbox>
+            </el-checkbox-group>
+          </div>
         </div>
       </div>
       <div v-if="userFormData.isSubmit===false" class="control-box" align="center">
@@ -200,7 +321,13 @@
     },
     computed: {
       title () {
-        return `디프만 ${this.setApplicationData.season}기 지원서 작성하기`
+        return `디프만 ${this.setApplicationData.season}기 지원서`
+      },
+      korGender() {
+        return this.userFormData.gender === 'M' ? '남자' : '여자'
+      },
+      korPosition() {
+        return this.userFormData.position === 'designer' ? '디자이너' : '개발자'
       },
       authorizationHeader () {
         return {Authorization: 'Bearer ' + this.$store.state.token}
@@ -577,7 +704,39 @@
     #basic-info-box {
       width: 550px;
       display: inline-block;
+      
+      .submitted-form-box {
+        margin: 0 10px 8px 0;
+        display: inline-block;
+        float: left; // inline-block 의 기본 margin (잡히지도 않음) 을 제거하기 위함.
 
+        span {
+          display: inline-block;
+          padding: 10px;
+        }
+        // Customize input size
+        &#name {
+          width: 150px;
+        }
+        &#knownFrom {
+          width: 430px;
+        }
+        &.full {
+          width: 550px;
+        }
+        &.half {
+          width: 270px;
+        }
+        &.selector {
+          width: 110px;
+        }
+        &.endcol {
+          margin-right: 0;
+        }
+        &#personalUrl {
+          margin-bottom: 0;
+        }
+      }
       .el-form-item {
         margin: 0 10px 8px 0;
         display: inline-block;
@@ -648,6 +807,10 @@
   #cover-letter-wrapper {
     h4 {
       margin: 30px 0 10px 0;
+    }
+    .answer-text-box {
+      white-space: pre-wrap;
+      line-height:160%;
     }
   }
 
