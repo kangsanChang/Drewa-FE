@@ -1,40 +1,68 @@
 <template>
-  <el-header>
-    <img src="../assets/white-logo.png" height="34" width="34" alt="depromeet logo">
-    <div id="header-info">
-      <span>장강산</span>
-      <a id="signout" href="/"><i class="fa fa-sign-out" aria-hidden="true"></i></a>
+  <el-header height="75px">
+    <img src="../assets/white-logo.png" height="35" width="35" alt="depromeet logo">
+    <div id="header-nav">
+      <ul>
+        <li>
+          <span>장강산</span>
+        </li>
+        <li>
+          <svg width="25" height="25" data-jdenticon-value="장강산"></svg>
+        </li>
+        <li>
+          <a id="signout" href="/" title="로그아웃"><i class="fa fa-sign-out" aria-hidden="true"></i></a>
+        </li>
+      </ul>
     </div>
   </el-header>
 </template>
-
-<script>
-  export default {
-  }
-</script>
-
 
 <style lang="scss" scoped>
   .el-header {
     background-color: #2b2b2b;
     color: white;
     text-align: center;
-    line-height: 60px;
+    // line-height: 60px;
+    padding: 20px;
+
     img {
       display: inline-block;
       float: left;
       margin-left: 65px;
-      margin-top: 13px;
     }
-    #header-info {
+    
+    #header-nav {
       display: inline-block;
       float: right;
-      #signout {
-        display: inline-block;
-        margin-left: 20px;
-        text-decoration:none;
-        color: inherit;
-        cursor: pointer;
+      font-size: 1.0em;
+      overflow: hidden;
+
+      ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+
+      li {
+        float: left;
+        span {
+          line-height: 30px;
+        }
+        svg {
+          display: inline-block;
+          background-color: white;
+          border-radius: 5px;
+          margin-left: 10px;
+        }
+        #signout {
+          margin-left: 40px;
+          display: inline;
+          font-size: 25px;
+          text-decoration:none;
+          color: inherit;
+          cursor: pointer;
+        }
       }
     }
   }
