@@ -20,14 +20,19 @@
 
 <style lang="scss" scoped>
   #login-container {
-    margin:  auto;
-    width: 550px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     h1 {
       display: block;
       margin-top: 80px;
+      margin-bottom: 60px;
     }
     #login-box {
-      margin-top: 60px;
+      width: 550px;
+      margin: auto;
     }
   }
 </style>

@@ -1,9 +1,9 @@
 <template>
-  <div id="video-container">
+  <section id="video-container">
     <video autoplay loop>
       <source :src="videoSrcMp4" type="video/mp4">
     </video>
-  </div>
+  </section>
 </template>
 
 <script>
@@ -20,13 +20,12 @@ export default {
 <style lang="scss" scoped>
   #video-container {
     width: 100%;
-    height: 100%;
-    overflow: hidden;
+    height: 100vh;
+    overflow: hidden;    
   }
   #video-container video {
-    position: fixed; right: 0; bottom: 0;
-    min-width: 100%; min-height: 100%;
-    width: auto; height: auto; z-index: -100;
-    background-size: cover;
+      object-fit: cover;
+      width: 100%;
+      height: 100%;    
   }
 </style>
