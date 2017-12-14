@@ -1,7 +1,7 @@
 <template>
   <el-aside width="200px">
     <el-menu background-color="#2b2b2b" text-color="white" active-text-color="#ffd04b" :default-active="this.$route.name" :router="true">
-      <el-menu-item index="summary">
+      <el-menu-item index="overview">
         <span>요약</span>
       </el-menu-item>
       <el-menu-item index="eval-application">

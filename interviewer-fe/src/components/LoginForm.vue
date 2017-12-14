@@ -51,7 +51,7 @@ export default {
       } else {
         this.$store.dispatch('loginInterviewer', {loginForm: this.loginForm})
         .then((res) => {
-          this.$router.push({name: 'summary'})
+          this.$router.push({name: 'overview'})
           this.$notify.success({title: '성공', message: '로그인에 성공 하였습니다.'})
         })
         .catch((e) => {

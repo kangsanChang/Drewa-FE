@@ -9,7 +9,7 @@ import store from './store'
 export const routes = [
   {path: '/', name: 'InterviewerLogin', component: InterviewerLogin},
   {path: '/signup', name: 'signup', component: InterviewerSignUp},
-  {path: '/summary', name: 'summary', component: Dashboard, beforeEnter: checkToken},
+  {path: '/overview', name: 'overview', component: Dashboard, beforeEnter: checkToken},
   {path: '/eval-application', name: 'eval-application', component: Dashboard, beforeEnter: checkToken},
   {path: '/eval-interview', name: 'eval-interview', component: Dashboard, beforeEnter: checkToken},
   {path: '/result', name: 'result', component: Dashboard, beforeEnter: checkToken},
