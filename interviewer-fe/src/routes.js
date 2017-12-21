@@ -10,10 +10,11 @@ export const routes = [
   {path: '/', name: 'InterviewerLogin', component: InterviewerLogin},
   {path: '/signup', name: 'signup', component: InterviewerSignUp},
   {path: '/overview', name: 'overview', component: Dashboard, beforeEnter: checkToken},
-  {path: '/eval-application', name: 'eval-application', component: Dashboard, beforeEnter: checkToken},
-  {path: '/eval-interview', name: 'eval-interview', component: Dashboard, beforeEnter: checkToken},
+  {path: '/eval-application', name: 'applicationTable', component: Dashboard, beforeEnter: checkToken},
+  {path: '/eval-interview', name: 'intervieweeTable', component: Dashboard, beforeEnter: checkToken},
   {path: '/result', name: 'result', component: Dashboard, beforeEnter: checkToken},
-  {path: '/settings', name: 'settings', component: Dashboard, beforeEnter: checkToken}
+  {path: '/settings', name: 'settings', component: Dashboard, beforeEnter: checkToken},
+  {path: '/settings/new', name: 'settingForm', component: Dashboard, beforeEnter: checkToken}
 ]
 
 // es6 arrow function 스타일로 적으면 안먹힘!!

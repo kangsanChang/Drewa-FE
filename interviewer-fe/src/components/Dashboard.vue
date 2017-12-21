@@ -18,10 +18,11 @@
   import intervieweeTable from './IntervieweeTable.vue'
   import result from './result.vue'
   import settings from './settings.vue'
+  import settingForm from './settingForm.vue'
 
   export default {
     name: 'dashboard',
-    components: {vHeader, navSidebar, overview, applicationTable, intervieweeTable, result, settings},
+    components: {vHeader, navSidebar, overview, applicationTable, intervieweeTable, result, settings, settingForm},
     created () {
       if (this.$store.state.token === '' && sessionStorage.getItem('user_token')) {
         this.$store.state.token = sessionStorage.getItem('user_token')
@@ -30,13 +31,7 @@
     },
     computed: {
       currentView(){
-        if(this.$route.name === 'eval-application'){
-          return 'applicationTable';
-        }else if(this.$route.name === 'eval-interview'){
-          return 'intervieweeTable';
-        }else{
-          return this.$route.name;
-        }
+        return this.$route.name;
       }
     }
   }

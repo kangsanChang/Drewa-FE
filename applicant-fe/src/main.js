@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import ElementUI from 'element-ui'
+import locale from 'element-ui/lib/locale/lang/ko'
 import 'element-ui/lib/theme-chalk/index.css'
 import App from './App.vue'
 import store from './store'
@@ -8,8 +9,10 @@ import { routes } from './routes'
 import { clone } from 'lodash'
 import moment from 'moment'
 
-Vue.use(ElementUI)
+Vue.use(ElementUI, { locale })
 Vue.use(VueRouter)
+
+moment.locale('ko')
 
 Vue.prototype.clone = clone
 Vue.prototype.moment = moment
