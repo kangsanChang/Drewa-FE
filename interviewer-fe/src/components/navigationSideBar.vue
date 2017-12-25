@@ -24,6 +24,9 @@
 export default {
   computed: {
     activeIdx(){
+      if(this.$route.name === 'settingForm'){
+        return '/settings'
+      }
       return this.$route.path
     }
   }

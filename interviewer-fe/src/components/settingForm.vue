@@ -1,21 +1,25 @@
 <template>
   <div id="container">
+    <router-link id="back" title="상세보기" :to="{name: 'settings'}"><i class="el-icon-d-arrow-left"></i><span>뒤로가기</span></router-link>
     <h1 id="title">모집 생성 및 수정</h1>
     <div id="control-box">
       <el-button-group>
         <el-button id="download">이전 기수 설정 불러오기</el-button>
-        <el-button id="initialize">초기화</el-button>
         <el-button id="save">저장</el-button>
+        <el-button id="initialize" @click="resetForm()">초기화</el-button>
         <el-button id="delete">삭제</el-button>
       </el-button-group>
     </div>
     <div id="setting-box-wrapper">
       <div id="basic-setting-box" class="setting-box">
-        <el-form label-position="top">
-          <el-form-item label="모집 기수" id="season">
+        <el-form label-position="top" ref="basicSettings">
+          <el-form-item label="모집 기수" id="season" class="inline-box">
             <el-input type="text" v-model="settingForm.season"><template slot="append">기</template></el-input>
           </el-form-item>
-          <el-form-item label="서류 모집 기간" class="inline-box" id="applicationDue">
+          <el-form-item label="면접관 초대 코드" id="invitationCode" class="inline-box">
+            <el-input type="text" v-model="settingForm.invitationCode"></el-input>
+          </el-form-item>
+          <el-form-item label="서류 모집 기간" id="applicationDue">
             <el-date-picker
               v-model="settingForm.applicationPeriod"
               type="datetimerange"
@@ -24,9 +28,16 @@
               end-placeholder="서류 모집 마감일"
             ></el-date-picker>
           </el-form-item>
-          <el-form-item label="서류 발표일" class="inline-box" id="announcement-box">
+          <el-form-item label="서류 발표일" class="inline-box">
             <el-date-picker
-              v-model="settingForm.announcementDate"
+              v-model="settingForm.applicationAnnouncementDate"
+              type="datetime"
+              placeholder="날짜, 시간 선택">
+            </el-date-picker>
+          </el-form-item>
+          <el-form-item label="최종 발표일" class="inline-box">
+            <el-date-picker
+              v-model="settingForm.finalAnnouncementDate"
               type="datetime"
               placeholder="날짜, 시간 선택">
             </el-date-picker>
@@ -38,25 +49,32 @@
             </el-date-picker>
             <el-button @click="addDate">추가</el-button>
           </el-form-item>
-          <el-form-item label="면접시간 선택" id="interview-time-box">
-            <div v-for="(elem, dateIndex) in settingForm.interviewTime" :key="dateIndex" class="time-pick-box">
+          <el-form-item label="면접 세부설정" id="interview-time-box">
+            <div v-for="(elem, dateIndex) in settingForm.interviewSchedule" :key="dateIndex" class="time-pick-box">
               <div class="subtitle-box">
                 <span>{{ dateFormat(elem.date) }}</span>
                 <el-button @click="removeDate(dateIndex)" size="mini" icon="el-icon-delete" type="info"></el-button>
               </div>
-              <el-time-select
-                v-model="settingForm.pickTime[dateIndex]"
-                :picker-options="{
-                  start: '09:00',
-                  step: '00:30',
-                  end: '19:30'
-                }"
-                placeholder="시간 선택"
-                size="mini">
-              </el-time-select>
-              <el-button size="mini" @click="addTime(elem, dateIndex)">추가</el-button>
-              <div class="time-tag-box">
-                <el-tag v-for="(time, timeIndex) in settingForm.interviewTime[dateIndex].times" :key="timeIndex" closable @close="removeTime(dateIndex, timeIndex)" size="medium">{{ time }}</el-tag>
+              <div class="interview-setting-box">
+                <span>면접장소</span>
+                <div>
+                  <el-input type="text" size="mini" v-model="settingForm.interviewSchedule[dateIndex].place"></el-input>
+                </div>
+                <span>면접 시간</span>
+                <div class="time-tag-box">
+                  <el-tag v-for="(time, timeIndex) in settingForm.interviewSchedule[dateIndex].times" :key="timeIndex" closable @close="removeTime(dateIndex, timeIndex)" size="medium">{{ time }}</el-tag>
+                </div>
+                <el-time-select
+                  v-model="settingForm.pickTime[dateIndex]"
+                  :picker-options="{
+                    start: '09:00',
+                    step: '00:30',
+                    end: '19:30'
+                  }"
+                  placeholder="시간 선택"
+                  size="mini">
+                </el-time-select>
+                <el-button size="mini" @click="addTime(elem, dateIndex)">추가</el-button>
               </div>
             </div>
           </el-form-item>
@@ -89,8 +107,8 @@
           </el-form-item>
         </el-form>
       </div>
-      <div id="detail-setting-box" class="setting-box">
-        <el-form label-position="top">
+      <div id="message-setting-box" class="setting-box">
+        <el-form label-position="top" ref="messageSettings">
           <el-form-item class="question-input" label="공통 질문">
             <div v-for="(commonQ, index) in settingForm.questions.common" :key="index">
               <el-tag closable @close="removeQuestion('common', index)" type="info">{{ commonQ }}</el-tag>
@@ -164,7 +182,9 @@
       </div>
     </div>
     <div id="finish-box">
-      <el-button id="finish">모집 종료 및 박제</el-button>
+      <el-button-group>
+        <el-button id="finish">모집 종료 및 박제</el-button>
+      </el-button-group>
     </div>
   </div>
 </template>
@@ -181,10 +201,11 @@ export default {
         mainDescription: '',
         mainPosterUrl: '',
         applicationPeriod: [],
-        announcementDate: '',
+        applicationAnnouncementDate: '',
+        finalAnnouncementDate: '',
         pickDate:'',
         pickTime:[],
-        interviewTime: [],
+        interviewSchedule: [],
         inputQuestion:{
           common: '',
           developer: '',
@@ -223,21 +244,21 @@ export default {
       if((date == null) || (date == '')){
         return this.$notify.error('면접일을 선택하지 않았습니다.');
       }
-      const isDuplicate = this.settingForm.interviewTime.some((elem) => {
+      const isDuplicate = this.settingForm.interviewSchedule.some((elem) => {
         if(elem.date === date){ return true }
         return false;
       })
       if(isDuplicate){
         return this.$notify.error('중복된 날짜가 있습니다.');
       }
-      this.settingForm.interviewTime.push({date, times:[]});
-      this.settingForm.interviewTime.sort((a, b)=> {
+      this.settingForm.interviewSchedule.push({date, place:'', times:[]});
+      this.settingForm.interviewSchedule.sort((a, b)=> {
         return a.date - b.date
       });
       return;
     },
     removeDate(index){
-      return this.settingForm.interviewTime.splice(index, 1)
+      return this.settingForm.interviewSchedule.splice(index, 1)
     },
     addTime(interviewDate, dateIndex){
       const inputTime = this.settingForm.pickTime[dateIndex];
@@ -254,7 +275,7 @@ export default {
       return;
     },
     removeTime(dateIndex, timeIndex){
-      return this.settingForm.interviewTime[dateIndex].times.splice(timeIndex, 1)
+      return this.settingForm.interviewSchedule[dateIndex].times.splice(timeIndex, 1)
     },
     addQuestion(type){
       const inputQuestion = this.settingForm.inputQuestion[type]
@@ -277,6 +298,21 @@ export default {
 <style lang="scss" scoped>
   #container{
     padding: 0 20px;
+
+    #title {
+      font-size: 20px;
+    }
+    #back {
+      font-size: 20px;
+      text-decoration: none;
+      color: black;
+      span {
+        display: inline-block;
+        margin-left: 5px;
+        margin-bottom: 20px;
+        font-size: 15px;
+      }
+    }
   }
   #control-box {
     margin: 20px 0;
@@ -295,6 +331,10 @@ export default {
     &#season{
       width: 110px;
     }
+    &#invitationCode{
+      width: 300px;
+      margin-left: 40px;
+    }
     &.inline-box{
       display: inline-block;
     }
@@ -303,10 +343,17 @@ export default {
         display: block;
       }
     }
+    &#poster-upload-box{
+      width:300px;
+    }
+    .interview-setting-box {
+      margin-left: 20px;
+    }
     .time-pick-box{
       float: left;
       width: 100%;
       margin-bottom: 20px;
+      margin-left: 20px;
       .el-input{
         width: 220px;
       }
@@ -317,12 +364,13 @@ export default {
       }
       .time-tag-box {
         width: 50%;
+        margin-bottom: 10px;
         .el-tag {
           margin-right: 5px;
         }
       }
     }
-    // detail setting box
+    // message setting box
     &.question-input{
       width: 100%;
       .el-input {
@@ -337,5 +385,9 @@ export default {
   #finish-box{
     margin: 50px 0;
     text-align: center;
+    #save{
+      display: block;
+      text-align: center;
+    }
   }
 </style>
