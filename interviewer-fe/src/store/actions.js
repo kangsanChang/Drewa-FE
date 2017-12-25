@@ -5,10 +5,6 @@ export default {
     return new Promise((resolve, reject) => {
       API.interviewerSignUp(payload.userInfo, payload.recaptchaToken)
         .then((res) => {
-          const { token, interviewerIdx } = res.data.data
-          store.commit('createInterviewerInfo', { token, interviewerIdx })
-          sessionStorage.setItem('user_token', token)
-          sessionStorage.setItem('user_idx', interviewerIdx)
           resolve()
         })
         .catch((e) => {
@@ -29,13 +25,15 @@ export default {
       API.interviewerLogin(payload.loginForm, payload.recaptchaToken)
         .then((res) => {
           const data = res.data.data
-          if (data.interviewerIdx === undefined) {
-            return reject(new Error('no User'))
+          if (!data.userType) { return reject(new Error('no User')) }
+          const commitData = { token: data.token, userType: data.userType }
+          if (data.userType === 'interviewer') {
+            commitData.userIdx = data.userIdx
           }
-          const commitData = { token: data.token, interviewerIdx: data.interviewerIdx }
           store.commit('createInterviewerInfo', commitData)
           sessionStorage.setItem('user_token', data.token)
-          sessionStorage.setItem('user_idx', data.interviewerIdx)
+          sessionStorage.setItem('user_idx', data.userIdx)
+          sessionStorage.setItem('user_type', data.userType)
           resolve()
         })
         .catch((e) => {

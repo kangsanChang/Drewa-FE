@@ -1,10 +1,12 @@
 export default {
   'createInterviewerInfo': (state, payload) => {
     state.token = payload.token
-    state.interviewerIdx = payload.interviewerIdx
+    state.userIdx = payload.userIdx
+    state.userType = payload.userType
   },
   'removeInterviewerInfo': (state) => {
     state.token = ''
-    state.interviewerIdx = ''
+    state.userIdx = ''
+    state.userType = ''
   }
 }

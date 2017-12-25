@@ -1,4 +1,5 @@
 export default {
   token: '',
-  interviewerIdx: ''
+  userIdx: '',
+  userType: ''
 }

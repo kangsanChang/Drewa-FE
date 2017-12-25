@@ -26,7 +26,7 @@
     created () {
       if (this.$store.state.token === '' && sessionStorage.getItem('user_token')) {
         this.$store.state.token = sessionStorage.getItem('user_token')
-        this.$store.state.interviewerIdx = sessionStorage.getItem('user_idx')
+        this.$store.state.userIdx = sessionStorage.getItem('user_idx')
       }
     },
     computed: {
