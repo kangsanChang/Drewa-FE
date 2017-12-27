@@ -70,7 +70,7 @@
         </div>
         <div id="cover-letter-wrapper" class="wrapper">
           <h3 class="wrapper-title">자기소개서</h3>
-          <div v-for="(question, index) in setApplicationData.questions.commonQ" :key="index"
+          <div v-for="(question, index) in setApplicationData.questions.common" :key="index"
               class="text-box">
             <h4 class="title">{{index + 1}}. {{ question }}</h4>
             <el-input
@@ -82,9 +82,9 @@
             </el-input>
           </div>
           <div v-if="userFormData.position==='developer'">
-            <div v-for="(question, index) in setApplicationData.questions.devQ" :key="index"
+            <div v-for="(question, index) in setApplicationData.questions.developer" :key="index"
                 class="text-box">
-              <h4 class="title">{{index + setApplicationData.questions.commonQ.length +
+              <h4 class="title">{{index + setApplicationData.questions.common.length +
               1}}. {{ question }}</h4>
               <el-input
                 type="textarea"
@@ -96,9 +96,9 @@
             </div>
           </div>
           <div v-if="userFormData.position==='designer'">
-            <div v-for="(question, index) in setApplicationData.questions.desQ" :key="index"
+            <div v-for="(question, index) in setApplicationData.questions.designer" :key="index"
                 class="text-box">
-              <h4 class="title">{{index + setApplicationData.questions.commonQ.length +
+              <h4 class="title">{{index + setApplicationData.questions.common.length +
               1}}. {{ question }}</h4>
               <el-input
                 type="textarea"
@@ -137,7 +137,7 @@
         <div id="interview-time-wrapper" class="wrapper">
           <h3 class="wrapper-title">면접 시간 선택</h3>
           <span class="subtitle">면접 가능한 시간을 <u>모두</u> 선택해 주세요.</span>
-          <div v-for="(interviewDay, index) in setApplicationData.interviewTimes" :key="index"
+          <div v-for="(interviewDay, index) in setApplicationData.interviewSchedule" :key="index"
               class="interview-select-box">
             <span>{{interviewDay.date}}</span>
             <el-checkbox-group v-model="userFormData.interviewAvailableTimes">
@@ -207,23 +207,23 @@
         </div>
         <div id="cover-letter-wrapper" class="wrapper">
           <h3 class="wrapper-title">자기소개서</h3>
-          <div v-for="(question, index) in setApplicationData.questions.commonQ" :key="index"
+          <div v-for="(question, index) in setApplicationData.questions.common" :key="index"
               class="text-box">
             <h4 class="title">{{index + 1}}. {{ question }}</h4>
             <p class="answer-text-box">{{ userFormData.answers[index] }}</p>
           </div>
           <div v-if="userFormData.position==='developer'">
-            <div v-for="(question, index) in setApplicationData.questions.devQ" :key="index"
+            <div v-for="(question, index) in setApplicationData.questions.developer" :key="index"
                 class="text-box">
-              <h4 class="title">{{index + setApplicationData.questions.commonQ.length +
+              <h4 class="title">{{index + setApplicationData.questions.common.length +
               1}}. {{ question }}</h4>
               <p class="answer-text-box">{{ userFormData.devAnswers[index] }}</p>
             </div>
           </div>
           <div v-if="userFormData.position==='designer'">
-            <div v-for="(question, index) in setApplicationData.questions.desQ" :key="index"
+            <div v-for="(question, index) in setApplicationData.questions.designer" :key="index"
                 class="text-box">
-              <h4 class="title">{{index + setApplicationData.questions.commonQ.length +
+              <h4 class="title">{{index + setApplicationData.questions.common.length +
               1}}. {{ question }}</h4>
               <p class="answer-text-box">{{ userFormData.desAnswers[index] }}</p>
             </div>
@@ -256,7 +256,7 @@
         <div id="interview-time-wrapper" class="wrapper">
           <h3 class="wrapper-title">면접 시간 선택</h3>
           <span class="subtitle">면접 가능한 시간을 <u>모두</u> 선택해 주세요.</span>
-          <div v-for="(interviewDay, index) in setApplicationData.interviewTimes" :key="index"
+          <div v-for="(interviewDay, index) in setApplicationData.interviewSchedule" :key="index"
               class="interview-select-box">
             <span>{{interviewDay.date}}</span>
             <el-checkbox-group v-model="userFormData.interviewAvailableTimes" disabled>
@@ -294,8 +294,8 @@
         setApplicationData: {
           season: '',
           questions: '',
-          interviewTimes: [],
-          deadline: '',
+          interviewSchedule: [],
+          applicationPeriod: '',
         },
         userFormData: {
           name: '',
@@ -379,6 +379,8 @@
                   .catch((e) => {
                     loading.close()
                     if (e.response.status === 401) {
+                      sessionStorage.removeItem('user_token');
+                      sessionStorage.removeItem('user_idx');
                       this.$router.push({name: 'login'})
                       this.$notify.info({
                         title: '접속 시간 만료',
@@ -393,6 +395,8 @@
           .catch((e) => {
             loading.close()
             if (e.response.status === 401) {
+              sessionStorage.removeItem('user_token');
+              sessionStorage.removeItem('user_idx');
               this.$router.push({name: 'login'})
               this.$notify.info({
                 title: '접속 시간 만료',

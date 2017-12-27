@@ -57,8 +57,8 @@
         finalDesc: '',
 
         status: '', // user status (미제출, 제출 완료, 서류 불합격, 서류 합격, 최종 불합격, 최종 합격)
-        interviewPlace: '',
-        deadline: '', 
+        interviewSchedule: '',
+        deadline: '', // applicationPeriod[1] : 서류모집기간 중 마감
         message: '',
         confirmedInterviewTime: '',
         active: 1, // 서류 진행상황 (step 에 binding 함) (~과정 진행 중 및 상태 그림)
@@ -75,8 +75,8 @@
       const loading = this.$loading({lock: true, text: '로딩 중'})
       this.$store.dispatch('getApplicantStatus')
       .then((res) => {
-        this.deadline = this.moment(res.deadline).format('YYYY-MM-DD / hh:mm');
-        this.interviewPlace = res.interviewPlace;
+        this.deadline = this.moment(res.applicationPeriod[1]).format('YYYY-MM-DD / hh:mm');
+        this.interviewSchedule = res.interviewSchedule;
         this.confirmedInterviewTime = res.confirmedInterviewTime;
         loading.close()
         if(!res.isSubmit){
@@ -103,7 +103,7 @@
           this.active = 2
           this.docStatus = 'success'
           this.interviewStatus = 'finish'
-          this.message = `서류모집에 합격하였습니다.\n\n면접 시간과 장소는 아래와 같습니다. 정장이 아닌 편한 복장으로 참석해주시면 감사하겠습니다.\n\n${this.interviewPlace}, ${this.confirmedInterviewTime}`
+          this.message = `서류모집에 합격하였습니다.\n\n면접 시간과 장소는 아래와 같습니다. 정장이 아닌 편한 복장으로 참석해주시면 감사하겠습니다.\n\n${this.interviewSchedule}, ${this.confirmedInterviewTime}`
           return;
         }
 
@@ -125,6 +125,9 @@
       }).catch((e) => {
         loading.close()
         this.$notify.error({ message: "지원자 정보를 가져오는데 실패하였습니다."})
+        sessionStorage.removeItem('user_token');
+        sessionStorage.removeItem('user_idx');
+        this.$router.push({name: 'login'})
       })
     },
     methods: {

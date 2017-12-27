@@ -136,6 +136,9 @@ export default {
           const data = res.data.data
           resolve(data)
         })
+        .catch((e) => {
+          reject(e)
+        })
     })
   }
 }
