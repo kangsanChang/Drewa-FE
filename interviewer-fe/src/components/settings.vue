@@ -4,22 +4,12 @@
     <button id="create-button" @click="newSetting">새로운 모집 생성하기 ✨</button>
     <div id="current-setting-box">
       <h3>현재 진행중인 모집</h3>
-      <card title="4기 모집 설정"></card>
+      <card v-for="(elem, index) in this.seasons" v-if="elem.isFinished===false" :key="index" :title="cardTitle(elem.season)" :season="elem.season"></card>
     </div>
     <div id="prev-setting-box">
       <h3>이전 모집</h3>
       <div id="setting-cards">
-        <card title="1기 모집 설정"></card>
-        <card title="2기 모집 설정"></card>
-        <card title="3기 모집 설정"></card>
-        <card title="4기 모집 설정"></card>
-        <card title="5기 모집 설정"></card>
-        <card title="6기 모집 설정"></card>
-        <card title="7기 모집 설정"></card>
-        <card title="8기 모집 설정"></card>
-        <card title="9기 모집 설정"></card>
-        <card title="10기 모집 설정"></card>
-        <card title="11기 모집 설정"></card>
+        <card v-for="(elem, index) in this.seasons" v-if="elem.isFinished===true" :key="index" :title="cardTitle(elem.season)" :season="elem.season"></card>
       </div>
     </div>
   </div>
@@ -29,10 +19,26 @@
 import card from './settingCard.vue'
 export default {
   components: { card },
+  data(){
+    return{
+      seasons: []
+    }
+  },
+  computed: {
+  },
   methods: {
+    cardTitle(season){
+      return `${season}기 모집 설정`
+    },
     newSetting(){
       this.$router.push({name:'settingForm'})
     }
+  },
+  mounted(){
+    const seasons = this.$store.dispatch('getRecruitmentSeasons')
+      .then((res) => {
+        this.seasons = res;
+      })
   }
 }
 </script>

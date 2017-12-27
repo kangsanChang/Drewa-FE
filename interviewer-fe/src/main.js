@@ -6,7 +6,7 @@ import App from './App.vue'
 import store from './store'
 import VueRouter from 'vue-router'
 import { routes } from './routes'
-import { clone } from 'lodash'
+import { clone, assign } from 'lodash'
 import moment from 'moment'
 
 Vue.use(ElementUI, { locale })
@@ -15,6 +15,7 @@ Vue.use(VueRouter)
 moment.locale('ko')
 
 Vue.prototype.clone = clone
+Vue.prototype.assign = assign
 Vue.prototype.moment = moment
 
 const router = new VueRouter({

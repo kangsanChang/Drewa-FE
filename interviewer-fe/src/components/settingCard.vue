@@ -1,7 +1,7 @@
 <template>
   <div id="card">
     <h1>{{title}}</h1>
-    <router-link class="detail-link" title="상세보기" to="#"><i class="el-icon-d-arrow-right"></i></router-link>
+    <router-link class="detail-link" title="상세보기" :to="{path: '/settings/'+this.season}"><i class="el-icon-d-arrow-right"></i></router-link>
   </div>  
 </template>
 
@@ -9,7 +9,8 @@
 export default {
   props:{
     title : { type:String, required:true },
-  }
+    season : { type:Number, required:true }
+  },
 }
 </script>
 

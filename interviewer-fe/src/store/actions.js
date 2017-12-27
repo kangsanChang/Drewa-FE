@@ -41,5 +41,27 @@ export default {
           reject(err)
         })
     })
+  },
+  'getRecruitmentSeasons': (store) => {
+    return new Promise((resolve, reject) => {
+      API.getRecruitmentSeasons(store.state.token)
+        .then((res) => {
+          const data = res.data.data
+          const seasons = data.map(i => { return {season: i.season, isFinished: i.isFinished} })
+          resolve(seasons)
+        })
+    })
+  },
+  'getRecruitmentInfo': (store, payload) => {
+    return new Promise((resolve, reject) => {
+      API.getRecruitmentInfo(store.state.token, payload.season)
+        .then((res) => {
+          resolve(res)
+        })
+        .catch((e) => {
+          const err = e.response.data
+          reject(err)
+        })
+    })
   }
 }

@@ -30,14 +30,14 @@
           </el-form-item>
           <el-form-item label="서류 발표일" class="inline-box">
             <el-date-picker
-              v-model="settingForm.applicationAnnouncementDate"
+              v-model="settingForm.announcementDate.application"
               type="datetime"
               placeholder="날짜, 시간 선택">
             </el-date-picker>
           </el-form-item>
           <el-form-item label="최종 발표일" class="inline-box">
             <el-date-picker
-              v-model="settingForm.finalAnnouncementDate"
+              v-model="settingForm.announcementDate.final"
               type="datetime"
               placeholder="날짜, 시간 선택">
             </el-date-picker>
@@ -201,8 +201,10 @@ export default {
         mainDescription: '',
         mainPosterUrl: '',
         applicationPeriod: [],
-        applicationAnnouncementDate: '',
-        finalAnnouncementDate: '',
+        announcementDate: {
+          application: '',
+          final: '',
+        },
         pickDate:'',
         pickTime:[],
         interviewSchedule: [],
@@ -227,6 +229,14 @@ export default {
         invitationCode: '',
       }
     }
+  },
+  mounted(){
+    this.$store.dispatch('getRecruitmentInfo', {season:this.$route.params.season})
+    .then((res) => {
+      const data = res.data.data;
+      delete data.interviewGroup
+      this.assign(this.settingForm, data);
+    })
   },
   methods: {
     handleRemove(file, fileList) {

@@ -23,5 +23,21 @@ export default {
       userPassword: user.password,
       recaptchaToken
     })
+  },
+  // 모든 시즌 번호 가져오기
+  getRecruitmentSeasons (token) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+    return axios.get(BASE_URL + '/recruitmentinfo/')
+  },
+  // 설정 정보 받아오기
+  getRecruitmentInfo (token, season) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+    return axios.get(BASE_URL + '/recruitmentinfo/' + season)
+  },
+  // 설정 정보 보내기
+  postRecruitmentInfo (payload) {
+    return axios.post(BASE_URL + '/recruitmentInfo', {
+      payload
+    })
   }
 }

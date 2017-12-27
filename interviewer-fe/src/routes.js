@@ -14,7 +14,8 @@ export const routes = [
   {path: '/eval-interview', name: 'intervieweeTable', component: Dashboard, beforeEnter: checkToken},
   {path: '/result', name: 'result', component: Dashboard, beforeEnter: checkToken},
   {path: '/settings', name: 'settings', component: Dashboard, beforeEnter: checkToken},
-  {path: '/settings/new', name: 'settingForm', component: Dashboard, beforeEnter: checkToken}
+  {path: '/settings/new', name: 'settingForm', component: Dashboard, beforeEnter: checkToken},
+  {path: '/settings/:season', name: 'settingForm', component: Dashboard, beforeEnter: checkToken}
 ]
 
 // es6 arrow function 스타일로 적으면 안먹힘!!
@@ -27,3 +28,14 @@ function checkToken (to, from, next) {
     next()
   }
 }
+
+// session storage 에도 type 저장 되어 있음.
+
+// function adminOnly (to, from, next) {
+//   if (store.state.type === 'admin') {
+//     alert('admin only!')
+//     next(to)
+//   } else {
+//     next()
+//   }
+// }
