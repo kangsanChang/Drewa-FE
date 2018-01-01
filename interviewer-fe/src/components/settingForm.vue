@@ -96,7 +96,7 @@
                 action="https://jsonplaceholder.typicode.com/posts/"
                 list-type="picture-card"
                 :on-preview="handlePictureCardPreview"
-                :on-remove="handleRemove"
+                :on-remove="handleRemovePoster"
                 :show-file-list="false"
                 >
                 <i class="el-icon-plus"></i>
@@ -184,7 +184,7 @@
     </div>
     <div id="finish-box" v-if="settingForm.isFinished !== true">
       <el-button-group>
-        <el-button id="finish">모집 종료 및 박제</el-button>
+        <el-button id="finish" @click="seasonEnd()">모집 종료 및 박제</el-button>
       </el-button-group>
     </div>
   </div>
@@ -278,21 +278,31 @@ export default {
       };
     },
     getRecruitmentInfo(season) {
+      const loading = this.$loading({
+        lock: true,
+        text: '로딩 중',
+      })
       this.$store.dispatch('getRecruitmentInfo', { season })
       .then((res) => {
         const data = res.data.data;
         delete data.interviewGroup
-        // 끝난 기수 정보 가져올 떄 isFinished 가 true 되는 경우 막기 위함.
-        data.isFinished = false;
         this.assign(this.settingForm, data);
+        loading.close()
       })
     },
-    saveRecruitmentInfo(){
+    checkSeason(){
       if(this.$route.params.season){
         if(this.$route.params.season !== this.settingForm.season.toString()){
-          return this.$notify.error('현재 모집중인 기수 외엔 수정할 수 없습니다.');
+          this.$notify.error('현재 모집중인 기수 외엔 수정할 수 없습니다.');
+          return false;
         }
+        return true;
       }
+      // 생성 하다말고 삭제 버튼 누른 경우
+      return this.$router.push({name: 'settings'})
+    },
+    saveRecruitmentInfo(){
+      if(!this.checkSeason()){ return; }
       this.$store.dispatch('postRecruitmentInfo', { settingForm: this.settingForm })
       .then((res) => {
         if(res.status === 200){
@@ -301,6 +311,7 @@ export default {
       })
     },
     removeRecruitmentInfo(){
+      if(!this.checkSeason()){ return; }
       this.$confirm('모집 정보를 정말 삭제하시겠습니까?', '확인', {
           confirmButtonText: '네',
           cancelButtonText: '아니오',
@@ -314,9 +325,24 @@ export default {
           }
         })
       })
-      
     },
-    handleRemove(file, fileList) {
+    seasonEnd(){
+      if(!this.checkSeason()){ return; }
+      this.$confirm('모집을 마감하시겠습니까? 저장여부를 확인하시기 바랍니다. 마감 한 후에는 수정할 수 없습니다.', '확인', {
+        confirmButtonText: '네',
+        cancelButtonText: '아니오',
+        type: 'info',
+      }).then(() => {
+        this.$store.dispatch('seasonEnd', { season: this.$route.params.season })
+        .then((res) => {
+          if(res.status === 200) {
+            this.$notify.success('모집을 마감 하였습니다.')
+            return this.$router.push({name: 'settings'})
+          }
+        })
+      })
+    },
+    handleRemovePoster(file, fileList) {
       console.log(file, fileList);
     },
     handlePictureCardPreview(file) {

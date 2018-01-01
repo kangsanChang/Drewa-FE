@@ -87,5 +87,17 @@ export default {
           reject(err)
         })
     })
+  },
+  'seasonEnd': (store, payload) => {
+    return new Promise((resolve, reject) => {
+      API.seasonEnd(store.state.token, payload.season)
+        .then((res) => {
+          resolve(res)
+        })
+        .catch((e) => {
+          const err = e.response.data
+          reject(err)
+        })
+    })
   }
 }
