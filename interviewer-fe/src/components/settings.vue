@@ -1,7 +1,7 @@
 <template>
   <div id="settings-container">
-    <h1 id="title">모집 설정 &#x1F680;</h1>
-    <button id="create-button" @click="newSetting">새로운 모집 생성하기 ✨</button>
+    <h1 id="title">⚙️ 모집 설정</h1>
+    <button id="create-button" @click="newSetting">새로운 모집 생성하기 🚀</button>
     <div id="current-setting-box">
       <h3>현재 진행중인 모집</h3>
       <card v-for="(elem, index) in this.seasons" v-if="elem.isFinished===false" :key="index" :title="cardTitle(elem.season)" :season="elem.season"></card>
@@ -31,12 +31,21 @@ export default {
       return `${season}기 모집 설정`
     },
     newSetting(){
-      this.$router.push({name:'settingForm'})
+      const onSeason = this.seasons.some((elem)=> {
+        if(elem.isFinished === false ){ return true }
+        return false;
+      })
+      if(onSeason){
+        return this.$notify.error('현재 진행중인 시즌이 있습니다.')
+      } else {
+        this.$router.push({name:'settingForm'})
+      }
     }
   },
   mounted(){
     const seasons = this.$store.dispatch('getRecruitmentSeasons')
       .then((res) => {
+        res.sort((a,b) => { return b.season - a.season; })
         this.seasons = res;
       })
   }

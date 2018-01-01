@@ -63,5 +63,29 @@ export default {
           reject(err)
         })
     })
+  },
+  'postRecruitmentInfo': (store, payload) => {
+    return new Promise((resolve, reject) => {
+      API.postRecruitmentInfo(store.state.token, payload.settingForm)
+        .then((res) => {
+          resolve(res)
+        })
+        .catch((e) => {
+          const err = e.response.data
+          reject(err)
+        })
+    })
+  },
+  'removeRecruitmentInfo': (store, payload) => {
+    return new Promise((resolve, reject) => {
+      API.removeRecruitmentInfo(store.state.token, payload.season)
+        .then((res) => {
+          resolve(res)
+        })
+        .catch((e) => {
+          const err = e.response.data
+          reject(err)
+        })
+    })
   }
 }

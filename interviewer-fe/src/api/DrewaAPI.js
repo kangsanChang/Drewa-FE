@@ -35,9 +35,12 @@ export default {
     return axios.get(BASE_URL + '/recruitmentinfo/' + season)
   },
   // 설정 정보 보내기
-  postRecruitmentInfo (payload) {
-    return axios.post(BASE_URL + '/recruitmentInfo', {
-      payload
-    })
+  postRecruitmentInfo (token, settingForm) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+    return axios.post(BASE_URL + '/recruitmentInfo/' + settingForm.season, { settingForm })
+  },
+  removeRecruitmentInfo (token, season) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+    return axios.delete(BASE_URL + '/recruitmentinfo/' + season)
   }
 }

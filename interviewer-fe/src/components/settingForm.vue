@@ -1,13 +1,14 @@
 <template>
   <div id="container">
     <router-link id="back" title="상세보기" :to="{name: 'settings'}"><i class="el-icon-d-arrow-left"></i><span>뒤로가기</span></router-link>
-    <h1 id="title">모집 생성 및 수정</h1>
-    <div id="control-box">
+    <h1 id="title" v-if="settingForm.isFinished !== true">모집 생성 및 수정</h1>
+    <h1 id="title" v-else>이전 모집 정보 보기</h1>
+    <div id="control-box" v-if="settingForm.isFinished !== true">
       <el-button-group>
-        <el-button id="download">이전 기수 설정 불러오기</el-button>
-        <el-button id="save">저장</el-button>
+        <el-button id="download" @click="getRecruitmentInfo('prev')">이전 기수 설정 불러오기</el-button>
+        <el-button id="save" @click="saveRecruitmentInfo()">저장</el-button>
         <el-button id="initialize" @click="resetForm()">초기화</el-button>
-        <el-button id="delete">삭제</el-button>
+        <el-button id="delete" @click="removeRecruitmentInfo()">삭제</el-button>
       </el-button-group>
     </div>
     <div id="setting-box-wrapper">
@@ -181,7 +182,7 @@
         </el-form>
       </div>
     </div>
-    <div id="finish-box">
+    <div id="finish-box" v-if="settingForm.isFinished !== true">
       <el-button-group>
         <el-button id="finish">모집 종료 및 박제</el-button>
       </el-button-group>
@@ -197,6 +198,7 @@ export default {
       dialogVisible: false,
       settingForm: {
         season: '',
+        isFinished: '',
         mainTitle: '',
         mainDescription: '',
         mainPosterUrl: '',
@@ -231,14 +233,89 @@ export default {
     }
   },
   mounted(){
-    this.$store.dispatch('getRecruitmentInfo', {season:this.$route.params.season})
-    .then((res) => {
-      const data = res.data.data;
-      delete data.interviewGroup
-      this.assign(this.settingForm, data);
-    })
+    // 새로 생성하는 경우가 아니면 기존 recruitmentInfo 호출
+    if(this.$route.path !=='/settings/new'){
+      this.getRecruitmentInfo(this.$route.params.season)
+    }
   },
   methods: {
+    resetForm(){
+      this.dialogImageUrl = '',
+      this.dialogVisible = false,
+      this.settingForm = {
+        season: '',
+        isFinished: '',
+        mainTitle: '',
+        mainDescription: '',
+        mainPosterUrl: '',
+        applicationPeriod: [],
+        announcementDate: {
+          application: '',
+          final: '',
+        },
+        pickDate:'',
+        pickTime:[],
+        interviewSchedule: [],
+        inputQuestion:{
+          common: '',
+          developer: '',
+          designer: '',
+        },
+        questions: {
+          common: [],
+          developer: [],
+          designer: [],
+        },
+        infoMessages: {
+          submitted: '',
+          notSubmitted: '',
+          applicationAccept: '',
+          applicationReject: '',
+          finalAccept: '',
+          finalReject: '',
+        },
+        invitationCode: '',
+      };
+    },
+    getRecruitmentInfo(season) {
+      this.$store.dispatch('getRecruitmentInfo', { season })
+      .then((res) => {
+        const data = res.data.data;
+        delete data.interviewGroup
+        // 끝난 기수 정보 가져올 떄 isFinished 가 true 되는 경우 막기 위함.
+        data.isFinished = false;
+        this.assign(this.settingForm, data);
+      })
+    },
+    saveRecruitmentInfo(){
+      if(this.$route.params.season){
+        if(this.$route.params.season !== this.settingForm.season.toString()){
+          return this.$notify.error('현재 모집중인 기수 외엔 수정할 수 없습니다.');
+        }
+      }
+      this.$store.dispatch('postRecruitmentInfo', { settingForm: this.settingForm })
+      .then((res) => {
+        if(res.status === 200){
+          this.$notify.success('모집 정보를 저장하였습니다!')
+        }
+      })
+    },
+    removeRecruitmentInfo(){
+      this.$confirm('모집 정보를 정말 삭제하시겠습니까?', '확인', {
+          confirmButtonText: '네',
+          cancelButtonText: '아니오',
+          type: 'info',
+      }).then(() => {
+        this.$store.dispatch('removeRecruitmentInfo', { season: this.$route.params.season })
+        .then((res) => {
+          if(res.status === 204) { 
+            this.$notify.success('모집 정보를 삭제하였습니다.')
+            return this.$router.push({name: 'settings'})
+          }
+        })
+      })
+      
+    },
     handleRemove(file, fileList) {
       console.log(file, fileList);
     },
