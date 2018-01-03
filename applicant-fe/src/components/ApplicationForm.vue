@@ -139,7 +139,7 @@
           <span class="subtitle">면접 가능한 시간을 <u>모두</u> 선택해 주세요.</span>
           <div v-for="(interviewDay, index) in setApplicationData.interviewSchedule" :key="index"
               class="interview-select-box">
-            <span>{{interviewDay.date}}</span>
+            <span>{{interviewDateFormat(interviewDay.date)}}</span>
             <el-checkbox-group v-model="userFormData.interviewAvailableTimes">
               <el-checkbox v-for="(time, index) in interviewDay.times" :key="index"
                           :label="interviewDay.date+'-'+time" border>{{time}}
@@ -185,18 +185,6 @@
           </div>
           <div id="photo-box">
             <div id="photo-upload-box" class="box">
-              <el-upload
-                :disabled="userFormData.isSubmit"
-                v-loading="picLoading"
-                name="user_image"
-                class="avatar-uploader"
-                :headers="authorizationHeader"
-                :action="pictureUploadUrl"
-                :show-file-list="false"
-                :on-success="uploadPictureSuccess"
-                :before-upload="beforePictureUpload"
-                :on-error="uploadFail"
-              >
                 <img v-if="userFormData.applicantImageUrl" :src="userFormData.applicantImageUrl"
                     class="avatar">
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -258,7 +246,7 @@
           <span class="subtitle">면접 가능한 시간을 <u>모두</u> 선택해 주세요.</span>
           <div v-for="(interviewDay, index) in setApplicationData.interviewSchedule" :key="index"
               class="interview-select-box">
-            <span>{{interviewDay.date}}</span>
+            <span>{{interviewDateFormat(interviewDay.date)}}</span>
             <el-checkbox-group v-model="userFormData.interviewAvailableTimes" disabled>
               <el-checkbox v-for="(time, index) in interviewDay.times" :key="index"
                           :label="interviewDay.date+'-'+time" border v-if="userFormData.interviewAvailableTimes.includes(interviewDay.date+'-'+time)">{{time}}
@@ -422,6 +410,9 @@
           window.scrollTo(0, 0)
           return false
         }
+      },
+      interviewDateFormat (date) {
+        return this.moment(date).format('YYYY/MM/DD (dddd)');
       },
       // Phone
       phoneValidator () {
