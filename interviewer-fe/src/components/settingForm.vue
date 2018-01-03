@@ -93,13 +93,19 @@
           <el-form-item label="메인 페이지 포스터">
             <div id="poster-upload-box">
               <el-upload
-                action="https://jsonplaceholder.typicode.com/posts/"
+                :disabled="settingForm.isFinished"
+                v-loading="posterLoading"
+                :action="posterUploadUrl"
+                :headers="authorizationHeader"
+                name="poster"
                 list-type="picture-card"
-                :on-preview="handlePictureCardPreview"
-                :on-remove="handleRemovePoster"
                 :show-file-list="false"
+                :before-upload="beforePosterUpload"
+                :on-success="uploadPosterSuccess"
+                :on-error="uploadFail"
                 >
-                <i class="el-icon-plus"></i>
+                <img v-if="settingForm.mainPosterUrl" :src="settingForm.mainPosterUrl" id="posterImage">
+                <i v-else class="el-icon-plus"></i>
               </el-upload>
               <el-dialog :visible.sync="dialogVisible" size="tiny">
                 <img width="100%" :src="settingForm.mainPosterUrl" alt="poster image">
@@ -194,8 +200,7 @@
 export default {
   data(){
     return{
-      dialogImageUrl: '',
-      dialogVisible: false,
+      posterLoading: false,
       settingForm: {
         season: '',
         isFinished: '',
@@ -236,6 +241,14 @@ export default {
     // 새로 생성하는 경우가 아니면 기존 recruitmentInfo 호출
     if(this.$route.path !=='/settings/new'){
       this.getRecruitmentInfo(this.$route.params.season)
+    }
+  },
+  computed: {
+    posterUploadUrl() {
+      return `/api/recruitmentinfo/${ this.$route.params.season }/poster` 
+    },
+    authorizationHeader() {
+      return {Authorization: 'Bearer ' + this.$store.state.token}
     }
   },
   methods: {
@@ -326,6 +339,36 @@ export default {
         })
       })
     },
+    beforePosterUpload(file){
+      const isImage = file.type === 'image/jpeg' || file.type === 'image/png'
+      // spinner on
+      this.posterLoading = true
+      if (!isImage) {
+        this.$notify.error({
+          title: '잘못 된 형식!',
+          message: '프로필 사진은 jpg 또는 png 확장자여야 합니다.',
+        })
+        this.posterLoading = false
+        return false;
+      }
+      return isImage
+    },
+    uploadPosterSuccess(res, file){
+      this.$notify({
+          title: '성공!',
+          message: '정상적으로 사진을 업로드하였습니다.',
+          type: 'success',
+        })
+        this.settingForm.mainPosterUrl = res.data.url
+        this.posterLoading = false
+    },
+    uploadFail (err) {
+      this.$notify({
+        message: '파일 업로드 중 알 수 없는 에러가 발생하였습니다.',
+        type: 'error',
+      })
+      this.posterLoading = false
+    },
     seasonEnd(){
       if(!this.checkSeason()){ return; }
       this.$confirm('모집을 마감하시겠습니까? 저장여부를 확인하시기 바랍니다. 마감 한 후에는 수정할 수 없습니다.', '확인', {
@@ -341,13 +384,6 @@ export default {
           }
         })
       })
-    },
-    handleRemovePoster(file, fileList) {
-      console.log(file, fileList);
-    },
-    handlePictureCardPreview(file) {
-      this.dialogImageUrl = file.url;
-      this.dialogVisible = true;
     },
     dateFormat(date){
       return this.moment(date).format('YYYY/MM/DD (dddd)');
@@ -456,8 +492,13 @@ export default {
         display: block;
       }
     }
-    &#poster-upload-box{
-      width:300px;
+    #poster-upload-box{
+      display: inline-block;
+      img {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
     }
     .interview-setting-box {
       margin-left: 20px;
