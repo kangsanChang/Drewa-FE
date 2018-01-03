@@ -1,6 +1,18 @@
 import API from './../api/DrewaAPI'
 
 export default {
+  'getMainRecruitment': () => {
+    return new Promise((resolve, reject) => {
+      API.getMainRecruitment()
+        .then((res) => {
+          const data = res.data.data
+          resolve(data)
+        })
+        .catch((e) => {
+          reject(e)
+        })
+    })
+  },
   'createApplicant': (store, payload) => {
     return new Promise((resolve, reject) => {
       API.applicantSignUp(payload.userInfo, payload.recaptchaToken)

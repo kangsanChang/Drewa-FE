@@ -5,6 +5,10 @@ import axios from 'axios'
 const BASE_URL = '/api'
 
 export default {
+  // intro page
+  getMainRecruitment () {
+    return axios.get(BASE_URL + '/recruitmentInfo/main')
+  },
   // 지원자 가입
   applicantSignUp (user, recaptchaToken) {
     return axios.post(BASE_URL + '/applicants', {

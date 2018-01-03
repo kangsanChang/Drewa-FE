@@ -1,16 +1,16 @@
 <template>
   <div id="container">
-    <div id="contents-wrapper">
+    <div v-if="info.season" id="contents-wrapper">
       <div id="poster">
-        <img src="../assets/depromeet-poster3.jpg">
+        <img :src="info.mainPosterUrl">
       </div>
       <div id="notice-wrapper">
         <div id="notice-box">
           <div id="title">
-            <h2>{{ title }}</h2>
+            <h2>{{ info.mainTitle }}</h2>
           </div>
           <div>
-            <p class="desc">{{ description }}</p>
+            <p class="desc">{{ info.mainDescription }}</p>
           </div>
           <div class="buttons-wrapper">
             <div class="buttons">
@@ -20,6 +20,9 @@
           </div>
         </div>
       </div>
+    </div>
+    <div v-else id="contents-wrapper">
+      <h1>현재 모집중이 아닙니다.</h1>
     </div>
   </div>
 </template>
@@ -31,14 +34,25 @@
     name: 'intro',
     data () {
       return {
-        title: '디프만 4기 회원을 모집합니다',
-        description: Config.DESCRIPTION,
+        info: {
+          mainTitle: '',
+          mainDescription: '',
+          season: '',
+          mainPosterUrl: ''
+        }
       }
     },
     mounted () {
       if (typeof(Storage) === 'undefined') {
         alert('최신 브라우저를 설치한 후 이용해주시기 바랍니다.')
       }
+      this.$store.dispatch('getMainRecruitment')
+        .then((res) => {
+          this.info = res;
+        })
+        .catch((e)=> {
+          this.$notify.error('알 수 없는 오류가 발생하였습니다.')
+        })
     },
   }
 </script>
