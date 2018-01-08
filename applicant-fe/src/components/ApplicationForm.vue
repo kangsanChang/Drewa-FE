@@ -140,9 +140,9 @@
           <div v-for="(interviewDay, index) in setApplicationData.interviewSchedule" :key="index"
               class="interview-select-box">
             <span>{{interviewDateFormat(interviewDay.date)}}</span>
-            <el-checkbox-group v-model="userFormData.interviewAvailableTimes">
-              <el-checkbox v-for="(time, index) in interviewDay.times" :key="index"
-                          :label="interviewDay.date+'-'+time" border>{{time}}
+            <el-checkbox-group v-model="userFormData.interviewAvailableTimes[index].times">
+              <el-checkbox v-for="(time, index) in interviewDay.times" :key="index" :label="time" border>
+                {{time}}
               </el-checkbox>
             </el-checkbox-group>
           </div>
@@ -247,9 +247,9 @@
           <div v-for="(interviewDay, index) in setApplicationData.interviewSchedule" :key="index"
               class="interview-select-box">
             <span>{{interviewDateFormat(interviewDay.date)}}</span>
-            <el-checkbox-group v-model="userFormData.interviewAvailableTimes" disabled>
-              <el-checkbox v-for="(time, index) in interviewDay.times" :key="index"
-                          :label="interviewDay.date+'-'+time" border v-if="userFormData.interviewAvailableTimes.includes(interviewDay.date+'-'+time)">{{time}}
+            <el-checkbox-group v-if="userFormData.interviewAvailableTimes[index]" v-model="userFormData.interviewAvailableTimes[index].times" disabled>
+              <el-checkbox v-for="(time, index) in userFormData.interviewAvailableTimes[index].times" :key="index" :label="time" border>
+                {{time}}
               </el-checkbox>
             </el-checkbox-group>
           </div>
@@ -312,9 +312,11 @@
         return `디프만 ${this.setApplicationData.season}기 지원서`
       },
       korGender() {
+        if(!this.userFormData.gender){ return; }
         return this.userFormData.gender === 'M' ? '남자' : '여자'
       },
       korPosition() {
+        if(!this.userFormData.position){ return; }
         return this.userFormData.position === 'designer' ? '디자이너' : '개발자'
       },
       authorizationHeader () {
@@ -362,6 +364,12 @@
               this.$store.dispatch('getApplicantData')
                   .then((res) => {
                     this.userFormData = res
+                    // interviewAvailableTimes 가 비었으면 ([]) 초기화 해주기
+                    if(this.userFormData.interviewAvailableTimes.length === 0){
+                      for(let val of this.setApplicationData.interviewSchedule) {
+                        this.userFormData.interviewAvailableTimes.push({date:val.date, times:[]})
+                      }
+                    }
                     loading.close()
                   })
                   .catch((e) => {
@@ -589,6 +597,10 @@
           if (!this.phoneValidator()) return
         }
         const loading = this.$loading({lock: true, text: '전송 중'})
+        //시간 정렬해서 보냄
+        for(let val of this.userFormData.interviewAvailableTimes){
+          val.times.sort()
+        }
         this.$store.dispatch('postApplicantData', {userFormData: this.userFormData})
             .then(() => {
               loading.close()
