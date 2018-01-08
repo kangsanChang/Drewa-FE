@@ -107,9 +107,6 @@
                 <img v-if="settingForm.mainPosterUrl" :src="settingForm.mainPosterUrl" id="posterImage">
                 <i v-else class="el-icon-plus"></i>
               </el-upload>
-              <el-dialog :visible.sync="dialogVisible" size="tiny">
-                <img width="100%" :src="settingForm.mainPosterUrl" alt="poster image">
-              </el-dialog>
             </div>
           </el-form-item>
         </el-form>
@@ -239,7 +236,7 @@ export default {
   },
   mounted(){
     // 새로 생성하는 경우가 아니면 기존 recruitmentInfo 호출
-    if(this.$route.path !=='/settings/new'){
+    if(this.$route.params.season !== 'new'){
       this.getRecruitmentInfo(this.$route.params.season)
     }
   },
@@ -253,8 +250,6 @@ export default {
   },
   methods: {
     resetForm(){
-      this.dialogImageUrl = '',
-      this.dialogVisible = false,
       this.settingForm = {
         season: '',
         isFinished: '',
@@ -299,8 +294,15 @@ export default {
       .then((res) => {
         const data = res.data.data;
         delete data.interviewGroup
+        if(season === 'prev') {
+          delete data.mainPosterUrl
+        }
         this.assign(this.settingForm, data);
         loading.close()
+      })
+      .catch((e) => {
+        console.log('error in getRecruitmentInfo');
+        console.log(e);
       })
     },
     checkSeason(){

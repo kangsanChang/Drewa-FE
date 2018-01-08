@@ -14,7 +14,6 @@ export const routes = [
   {path: '/eval-interview', name: 'intervieweeTable', component: Dashboard, beforeEnter: checkToken},
   {path: '/result', name: 'result', component: Dashboard, beforeEnter: checkToken},
   {path: '/settings', name: 'settings', component: Dashboard, beforeEnter: checkToken},
-  {path: '/settings/new', name: 'settingForm', component: Dashboard, beforeEnter: checkToken},
   {path: '/settings/:season', name: 'settingForm', component: Dashboard, beforeEnter: checkToken}
 ]
 

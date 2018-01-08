@@ -38,7 +38,7 @@ export default {
       if(onSeason){
         return this.$notify.error('현재 진행중인 시즌이 있습니다.')
       } else {
-        this.$router.push({name:'settingForm'})
+        this.$router.push({path:'/settings/new'})
       }
     }
   },
