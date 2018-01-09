@@ -16,18 +16,24 @@
   import overview from './overview.vue'
   import applicationTable from './ApplicationTable.vue'
   import intervieweeTable from './IntervieweeTable.vue'
+  import evalApplication from './EvalApplication.vue'
+  import evalInterview from './EvalInterview.vue'
   import result from './result.vue'
   import settings from './settings.vue'
   import settingForm from './settingForm.vue'
 
   export default {
     name: 'dashboard',
-    components: {vHeader, navSidebar, overview, applicationTable, intervieweeTable, result, settings, settingForm},
+    components: {vHeader, navSidebar, overview, applicationTable, intervieweeTable, evalApplication, evalInterview, result, settings, settingForm},
     created () {
       if (this.$store.state.token === '' && sessionStorage.getItem('user_token')) {
         this.$store.state.token = sessionStorage.getItem('user_token')
         this.$store.state.userIdx = sessionStorage.getItem('user_idx')
       }
+    },
+    mounted(){
+      console.log(this.$route.name);
+      console.log(this.currentView);
     },
     computed: {
       currentView(){

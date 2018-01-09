@@ -42,6 +42,15 @@ export default {
         })
     })
   },
+  'getApplications': (store) => {
+    return new Promise((resolve, reject) => {
+      API.getApplications(store.state.token)
+        .then((res) => {
+          resolve(res)
+        })
+    })
+  },
+
   'getRecruitmentSeasons': (store) => {
     return new Promise((resolve, reject) => {
       API.getRecruitmentSeasons(store.state.token)

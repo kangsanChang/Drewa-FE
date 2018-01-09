@@ -11,6 +11,7 @@ export const routes = [
   {path: '/signup', name: 'signup', component: InterviewerSignUp},
   {path: '/overview', name: 'overview', component: Dashboard, beforeEnter: checkToken},
   {path: '/eval-application', name: 'applicationTable', component: Dashboard, beforeEnter: checkToken},
+  {path: '/eval-application/:applicantIdx', name: 'evalApplication', component: Dashboard, beforeEnter: checkToken},
   {path: '/eval-interview', name: 'intervieweeTable', component: Dashboard, beforeEnter: checkToken},
   {path: '/result', name: 'result', component: Dashboard, beforeEnter: checkToken},
   {path: '/settings', name: 'settings', component: Dashboard, beforeEnter: checkToken},

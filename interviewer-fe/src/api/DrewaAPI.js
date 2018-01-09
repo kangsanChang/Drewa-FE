@@ -24,6 +24,13 @@ export default {
       recaptchaToken
     })
   },
+  // evaluation
+  getApplications (token) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+    return axios.get(BASE_URL + '/evaluation/application')
+  },
+
+  // admin
   // 모든 시즌 번호 가져오기
   getRecruitmentSeasons (token) {
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
