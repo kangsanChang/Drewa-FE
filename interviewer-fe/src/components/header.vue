@@ -4,10 +4,10 @@
     <div id="header-nav">
       <ul>
         <li>
-          <span>장강산</span>
+          <span>{{ this.$store.state.userName }}</span>
         </li>
         <li>
-          <svg width="25" height="25" data-jdenticon-value="장강산"></svg>
+          <svg width="25" height="25" :data-jdenticon-value="this.$store.state.userEmail"></svg>
         </li>
         <li>
           <a id="signout" href="/" title="로그아웃"><i class="fa fa-sign-out" aria-hidden="true"></i></a>

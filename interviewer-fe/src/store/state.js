@@ -1,5 +1,7 @@
 export default {
   token: '',
   userIdx: '',
-  userType: ''
+  userType: '',
+  userName: '',
+  userEmail: ''
 }

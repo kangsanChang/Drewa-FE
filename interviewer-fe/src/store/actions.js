@@ -24,16 +24,19 @@ export default {
     return new Promise((resolve, reject) => {
       API.interviewerLogin(payload.loginForm, payload.recaptchaToken)
         .then((res) => {
-          const data = res.data.data
-          if (!data.userType) { return reject(new Error('no User')) }
-          const commitData = { token: data.token, userType: data.userType }
-          if (data.userType === 'interviewer') {
-            commitData.userIdx = data.userIdx
+          const {token, userIdx, userType, userName, userEmail} = res.data.data
+          console.log(res.data.data)
+          if (!userType) { return reject(new Error('no User')) }
+          const commitData = {token, userType, userName, userEmail}
+          if (userType === 'interviewer') {
+            commitData.userIdx = userIdx
           }
           store.commit('createInterviewerInfo', commitData)
-          sessionStorage.setItem('user_token', data.token)
-          sessionStorage.setItem('user_idx', data.userIdx)
-          sessionStorage.setItem('user_type', data.userType)
+          sessionStorage.setItem('user_token', token)
+          sessionStorage.setItem('user_idx', userIdx)
+          sessionStorage.setItem('user_type', userType)
+          sessionStorage.setItem('user_name', userName)
+          sessionStorage.setItem('user_email', userEmail)
           resolve()
         })
         .catch((e) => {

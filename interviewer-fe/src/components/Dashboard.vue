@@ -29,11 +29,10 @@
       if (this.$store.state.token === '' && sessionStorage.getItem('user_token')) {
         this.$store.state.token = sessionStorage.getItem('user_token')
         this.$store.state.userIdx = sessionStorage.getItem('user_idx')
+        this.$store.state.userType = sessionStorage.getItem('user_type')
+        this.$store.state.userName = sessionStorage.getItem('user_name')
+        this.$store.state.userEmail = sessionStorage.getItem('user_email')
       }
-    },
-    mounted(){
-      console.log(this.$route.name);
-      console.log(this.currentView);
     },
     computed: {
       currentView(){
