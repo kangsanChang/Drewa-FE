@@ -22,7 +22,6 @@
     background-color: #2b2b2b;
     color: white;
     text-align: center;
-    // line-height: 60px;
     padding: 20px;
 
     img {

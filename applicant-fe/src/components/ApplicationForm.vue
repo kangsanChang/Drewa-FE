@@ -156,41 +156,38 @@
                 <span>{{ userFormData.name }}</span>
               </div>
               <div id="gender" class="selector submitted-form-box">
-                <span>{{ this.korGender }}</span>
+                <span>{{ korGender }}</span>
               </div>
               <div id="birth" class="half endcol submitted-form-box">
-                <span>{{ this.userFormData.birth }}</span>
+                <span>{{ userFormData.birth }}</span>
               </div>
               <div id="residence" class="half submitted-form-box">
-                <span>{{ this.userFormData.residence }}</span>
+                <span>{{ userFormData.residence }}</span>
               </div>
               <div id="phone" class="half endcol submitted-form-box">
-                <span>{{ this.userFormData.phone }}</span>
+                <span>{{ userFormData.phone }}</span>
               </div>
               <div id="company" class="half submitted-form-box">
-                <span>{{ this.userFormData.company }}</span>
+                <span>{{ userFormData.company }}</span>
               </div>
               <div id="major" class="half endcol submitted-form-box">
-                <span>{{ this.userFormData.major }}</span>
+                <span>{{ userFormData.major }}</span>
               </div>
               <div id="position" class="selector submitted-form-box">
-                <span>{{ this.korPosition }}</span>
+                <span>{{ korPosition }}</span>
               </div>
               <div id="knownFrom" class="endcol submitted-form-box">
-                <span>{{ this.userFormData.knownFrom }}</span>
+                <span>{{ userFormData.knownFrom }}</span>
               </div>
               <div id="personalUrl" class="full endcol submitted-form-box">
-                <span>{{ this.userFormData.personalUrl }}</span>
+                <span>{{ userFormData.personalUrl }}</span>
               </div>
           </div>
           <div id="photo-box">
             <div id="photo-upload-box" class="box">
                 <img v-if="userFormData.applicantImageUrl" :src="userFormData.applicantImageUrl"
                     class="avatar">
-                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-              </el-upload>
             </div>
-            <div id="picture-upload-desc">프로필 사진<br>(jpg, png 최대 3MB)</div>
           </div>
         </div>
         <div id="cover-letter-wrapper" class="wrapper">
@@ -330,8 +327,7 @@
       },
       fileList () {
         return this.userFormData.portfolioFilename
-          ? [
-            {
+          ? [{
               name: this.userFormData.portfolioFilename,
               url: this.userFormData.applicantPortfolioUrl,
             }]
@@ -361,14 +357,12 @@
                   type: 'info',
                 })
             } else {
-              this.$store.dispatch('getApplicantData')
+              this.$store.dispatch('getApplicationData')
                   .then((res) => {
                     this.userFormData = res
                     // interviewAvailableTimes 가 비었으면 ([]) 초기화 해주기
                     if(this.userFormData.interviewAvailableTimes.length === 0){
-                      for(let val of this.setApplicationData.interviewSchedule) {
-                        this.userFormData.interviewAvailableTimes.push({date:val.date, times:[]})
-                      }
+                      this.userFormData.interviewAvailableTimes = this.setApplicationData.interviewSchedule.map(x => { return { date: x.date, times: [] } })
                     }
                     loading.close()
                   })
@@ -384,7 +378,7 @@
                       })
                       return
                     }
-                    console.log('error occured in dispatch when getApplicantData\n', e)
+                    console.log('error occured in dispatch when getApplicationData\n', e)
                   })
             }
           })
@@ -798,7 +792,7 @@
       }
       .avatar {
         width: 172px;
-        height: 178px;
+        height: 210px;
         display: block;
         border-radius: 10px;
       }

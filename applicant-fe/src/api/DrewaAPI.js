@@ -31,7 +31,7 @@ export default {
     return axios.get(BASE_URL + '/recruitmentInfo/now')
   },
   // 지원자가 적어놓은 정보 가져옴. application 접근 시 무조건 한번 실행
-  getApplicantData (applicantIdx, token) {
+  getApplicationData (applicantIdx, token) {
     // header Authorization 에서 token 설정
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
     return axios.get(BASE_URL + `/applicants/${applicantIdx}/application`)

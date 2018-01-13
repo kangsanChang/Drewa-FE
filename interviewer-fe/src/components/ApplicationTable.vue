@@ -114,6 +114,9 @@ export default {
   #table-container {
     margin-top: 24px;
     .showApplicationBtn {
+      &:focus {
+        outline: none;
+      }
       cursor: pointer;
       width: 66px;
       height: 28px;

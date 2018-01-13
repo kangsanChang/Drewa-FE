@@ -70,15 +70,15 @@ export default {
         })
     })
   },
-  'getApplicantData': (store) => {
+  'getApplicationData': (store) => {
     return new Promise((resolve, reject) => {
-      API.getApplicantData(store.state.applicantIdx, store.state.token)
+      API.getApplicationData(store.state.applicantIdx, store.state.token)
         .then((res) => {
           const data = res.data.data
           resolve(data)
         })
         .catch((e) => {
-          console.log('error in actions promise reject, getApplicantData')
+          console.log('error in actions promise reject, getApplicationData')
           reject(e)
         })
     })

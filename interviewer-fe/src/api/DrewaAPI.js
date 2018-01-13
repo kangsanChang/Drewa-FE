@@ -29,6 +29,31 @@ export default {
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
     return axios.get(BASE_URL + '/evaluation/application')
   },
+  getApplicationSetting (token) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+    return axios.get(BASE_URL + '/recruitmentInfo/now')
+  },
+  getApplicationData (applicantIdx, token) {
+    // header Authorization 에서 token 설정
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+    return axios.get(BASE_URL + `/applicants/${applicantIdx}/application`)
+  },
+  getEvalData (applicantIdx, token) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+    return axios.get(BASE_URL + `/evaluation/application/${applicantIdx}`)
+  },
+  postComment (comment, createdAt, applicantIdx, token) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+    return axios.post(BASE_URL + `/evaluation/application/${applicantIdx}/comments`, { comment, createdAt })
+  },
+  deleteComment (id, applicantIdx, token) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+    return axios.delete(BASE_URL + `/evaluation/application/${applicantIdx}/comments/${id}`)
+  },
+  sendPoint (point, applicantIdx, token) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+    return axios.post(BASE_URL + `/evaluation/application/${applicantIdx}/point`, { point })
+  },
 
   // admin
   // 모든 시즌 번호 가져오기
