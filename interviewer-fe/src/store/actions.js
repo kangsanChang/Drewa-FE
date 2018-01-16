@@ -48,11 +48,20 @@ export default {
     return new Promise((resolve, reject) => {
       API.getApplications(store.state.token)
         .then((res) => {
-          resolve(res)
+          const data = res.data.data
+          resolve(data)
         })
     })
   },
-
+  'postApplications': (store, payload) => {
+    return new Promise((resolve, reject) => {
+      API.postApplications(store.state.token, payload.applicants)
+        .then((res) => {
+          const data = res.data.data
+          resolve(data)
+        })
+    })
+  },
   'getApplicationSetting': (store) => {
     return new Promise((resolve, reject) => {
       API.getApplicationSetting(store.state.token)

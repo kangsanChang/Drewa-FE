@@ -1,140 +1,145 @@
 <template>
   <div id="container">
-    <div id="applicantion-box">
-      <div id="contents-wrapper">
-        <div id="submitted-application-wrapper">
-          <div id="basic-info-wrapper" class="wrapper">
-            <h3 class="wrapper-title">기본 인적사항</h3>
-            <div id="basic-info-box" class="box">
-                <div id="name" class="submitted-form-box">
-                  <span>{{ applicantFormData.name }}</span>
-                </div>
-                <div id="gender" class="selector submitted-form-box">
-                  <span>{{ korGender }}</span>
-                </div>
-                <div id="birth" class="half endcol submitted-form-box">
-                  <span>{{ applicantFormData.birth }}</span>
-                </div>
-                <div id="residence" class="half submitted-form-box">
-                  <span>{{ applicantFormData.residence }}</span>
-                </div>
-                <div id="phone" class="half endcol submitted-form-box">
-                  <span>{{ applicantFormData.phone }}</span>
-                </div>
-                <div id="company" class="half submitted-form-box">
-                  <span>{{ applicantFormData.company }}</span>
-                </div>
-                <div id="major" class="half endcol submitted-form-box">
-                  <span>{{ applicantFormData.major }}</span>
-                </div>
-                <div id="position" class="selector submitted-form-box">
-                  <span>{{ korPosition }}</span>
-                </div>
-                <div id="knownFrom" class="endcol submitted-form-box">
-                  <span>{{ applicantFormData.knownFrom }}</span>
-                </div>
-                <div id="personalUrl" class="full endcol submitted-form-box">
-                  <span>{{ applicantFormData.personalUrl }}</span>
-                </div>
-            </div>
-            <div id="photo-box">
-              <div id="photo-upload-box" class="box">
-                  <img v-if="applicantFormData.applicantImageUrl" :src="applicantFormData.applicantImageUrl" class="avatar">
-              </div>
-            </div>
-          </div>
-          <div id="cover-letter-wrapper" class="wrapper">
-            <h3 class="wrapper-title">자기소개서</h3>
-            <div v-for="(question, index) in setApplicationData.questions.common" :key="index"
-                class="text-box">
-              <h4 class="title">{{index + 1}}. {{ question }}</h4>
-              <p class="answer-text-box">{{ applicantFormData.answers[index] }}</p>
-            </div>
-            <div v-if="applicantFormData.position==='developer'">
-              <div v-for="(question, index) in setApplicationData.questions.developer" :key="index"
-                  class="text-box">
-                <h4 class="title">{{index + setApplicationData.questions.common.length +
-                1}}. {{ question }}</h4>
-                <p class="answer-text-box">{{ applicantFormData.devAnswers[index] }}</p>
-              </div>
-            </div>
-            <div v-if="applicantFormData.position==='designer'">
-              <div v-for="(question, index) in setApplicationData.questions.designer" :key="index"
-                  class="text-box">
-                <h4 class="title">{{index + setApplicationData.questions.common.length +
-                1}}. {{ question }}</h4>
-                <p class="answer-text-box">{{ applicantFormData.desAnswers[index] }}</p>
-              </div>
-            </div>
-          </div>
-          <div id="attached-document-wrapper" class="wrapper">
-            <h3 class="wrapper-title">첨부 자료</h3>
-            <div id="portfolio-upload-box" v-if="applicantFormData.applicantPortfolioUrl">
-              <el-upload
-                :disabled="applicantFormData.isSubmit"
-                name="user_portfolio"
-                class="upload-portfolio"
-                action="#"
-                :headers="authorizationHeader"
-                :limit="1"
-                :file-list="fileList"
-                :on-preview="handleFilePreview"
-              >
-              </el-upload>
-            </div>
-            <div v-else>
-              <span>없음</span>
-            </div>
-          </div>
-          <div id="interview-time-wrapper" class="wrapper">
-            <h3 class="wrapper-title">면접 시간 선택</h3>
-            <div v-for="(interviewDay, index) in setApplicationData.interviewSchedule" :key="index"
-                class="interview-select-box">
-              <span>{{interviewDateFormat(interviewDay.date)}}</span>
-              <el-checkbox-group v-if="applicantFormData.interviewAvailableTimes[index]" v-model="applicantFormData.interviewAvailableTimes[index].times" disabled>
-                <el-checkbox v-for="(time, index) in applicantFormData.interviewAvailableTimes[index].times" :key="index" :label="time" border>
-                  {{time}}
-                </el-checkbox>
-              </el-checkbox-group>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div id="control-box">
+      <router-link id="back-btn" title="뒤로가기" :to="{path: '/eval-application/'}"><i class="fa fa-arrow-circle-o-left" aria-hidden="true"></i></router-link>
     </div>
-    <div id="comments-box">
-      <div id="comments-wrapper" class="wrapper">
-        <h3 class="wrapper-title"># Comments</h3>
-        <div v-for="(data,index) in comments" :key="index" class="comment-box">
-          <div class="comment-info">
-            <ul>
-              <li><svg width="25" height="25" :data-jdenticon-value="data.userEmail"></svg></li>
-              <li><span>{{ data.userName }}</span></li>
-              <li><span id="createdAt">{{ CommentTime(data.createdAt) }}</span></li>
-              <li><i @click="confirmDelete(data._id)" v-if="myEmail === data.userEmail" class="el-icon-delete"></i></li>
-            </ul>
-          </div>
-          <div class="comment">
-            <p>{{ data.comment }}</p>
-          </div>
-        </div>
-        <div>
-          <div id="comment-input">
-            <el-input
-              type="textarea"
-              resize="none"
-              :autosize="{ minRows: 1, maxRows: 3}"
-              v-model="myComment"
-            ></el-input>
-          </div>
-          <div id="comment-submit">
-            <button @click="inputComment()">입력</button>
+    <div id="main-container">
+      <div id="applicantion-box">
+        <div id="contents-wrapper">
+          <div id="submitted-application-wrapper">
+            <div id="basic-info-wrapper" class="wrapper">
+              <h3 class="wrapper-title">기본 인적사항</h3>
+              <div id="basic-info-box" class="box">
+                  <div id="name" class="submitted-form-box">
+                    <span>{{ applicantFormData.name }}</span>
+                  </div>
+                  <div id="gender" class="selector submitted-form-box">
+                    <span>{{ korGender }}</span>
+                  </div>
+                  <div id="birth" class="half endcol submitted-form-box">
+                    <span>{{ applicantFormData.birth }}</span>
+                  </div>
+                  <div id="residence" class="half submitted-form-box">
+                    <span>{{ applicantFormData.residence }}</span>
+                  </div>
+                  <div id="phone" class="half endcol submitted-form-box">
+                    <span>{{ applicantFormData.phone }}</span>
+                  </div>
+                  <div id="company" class="half submitted-form-box">
+                    <span>{{ applicantFormData.company }}</span>
+                  </div>
+                  <div id="major" class="half endcol submitted-form-box">
+                    <span>{{ applicantFormData.major }}</span>
+                  </div>
+                  <div id="position" class="selector submitted-form-box">
+                    <span>{{ korPosition }}</span>
+                  </div>
+                  <div id="knownFrom" class="endcol submitted-form-box">
+                    <span>{{ applicantFormData.knownFrom }}</span>
+                  </div>
+                  <div id="personalUrl" class="full endcol submitted-form-box">
+                    <span>{{ applicantFormData.personalUrl }}</span>
+                  </div>
+              </div>
+              <div id="photo-box">
+                <div id="photo-upload-box" class="box">
+                    <img v-if="applicantFormData.applicantImageUrl" :src="applicantFormData.applicantImageUrl" class="avatar">
+                </div>
+              </div>
+            </div>
+            <div id="cover-letter-wrapper" class="wrapper">
+              <h3 class="wrapper-title">자기소개서</h3>
+              <div v-for="(question, index) in setApplicationData.questions.common" :key="index"
+                  class="text-box">
+                <h4 class="title">{{index + 1}}. {{ question }}</h4>
+                <p class="answer-text-box">{{ applicantFormData.answers[index] }}</p>
+              </div>
+              <div v-if="applicantFormData.position==='developer'">
+                <div v-for="(question, index) in setApplicationData.questions.developer" :key="index"
+                    class="text-box">
+                  <h4 class="title">{{index + setApplicationData.questions.common.length +
+                  1}}. {{ question }}</h4>
+                  <p class="answer-text-box">{{ applicantFormData.devAnswers[index] }}</p>
+                </div>
+              </div>
+              <div v-if="applicantFormData.position==='designer'">
+                <div v-for="(question, index) in setApplicationData.questions.designer" :key="index"
+                    class="text-box">
+                  <h4 class="title">{{index + setApplicationData.questions.common.length +
+                  1}}. {{ question }}</h4>
+                  <p class="answer-text-box">{{ applicantFormData.desAnswers[index] }}</p>
+                </div>
+              </div>
+            </div>
+            <div id="attached-document-wrapper" class="wrapper">
+              <h3 class="wrapper-title">첨부 자료</h3>
+              <div id="portfolio-upload-box" v-if="applicantFormData.applicantPortfolioUrl">
+                <el-upload
+                  :disabled="applicantFormData.isSubmit"
+                  name="user_portfolio"
+                  class="upload-portfolio"
+                  action="#"
+                  :headers="authorizationHeader"
+                  :limit="1"
+                  :file-list="fileList"
+                  :on-preview="handleFilePreview"
+                >
+                </el-upload>
+              </div>
+              <div v-else>
+                <span>없음</span>
+              </div>
+            </div>
+            <div id="interview-time-wrapper" class="wrapper">
+              <h3 class="wrapper-title">면접 시간 선택</h3>
+              <div v-for="(interviewDay, index) in setApplicationData.interviewSchedule" :key="index"
+                  class="interview-select-box">
+                <span>{{interviewDateFormat(interviewDay.date)}}</span>
+                <el-checkbox-group v-if="applicantFormData.interviewAvailableTimes[index]" v-model="applicantFormData.interviewAvailableTimes[index].times" disabled>
+                  <el-checkbox v-for="(time, index) in applicantFormData.interviewAvailableTimes[index].times" :key="index" :label="time" border>
+                    {{time}}
+                  </el-checkbox>
+                </el-checkbox-group>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <div id="evaluation-wrapper" class="wrapper">
-        <h3 class="wrapper-title"># 평가</h3>
-        <el-rate @change="sendPoint()" v-model="myPoint" :allow-half="true">
-        </el-rate>
+      <div id="comments-box">
+        <div id="comments-wrapper" class="wrapper">
+          <h3 class="wrapper-title"># Comments</h3>
+          <div v-for="(data,index) in comments" :key="index" class="comment-box">
+            <div class="comment-info">
+              <ul>
+                <li><svg width="25" height="25" :data-jdenticon-value="data.userEmail"></svg></li>
+                <li><span>{{ data.userName }}</span></li>
+                <li><span id="createdAt">{{ CommentTime(data.createdAt) }}</span></li>
+                <li><i @click="confirmDelete(data._id)" v-if="myEmail === data.userEmail" class="el-icon-delete"></i></li>
+              </ul>
+            </div>
+            <div class="comment">
+              <p>{{ data.comment }}</p>
+            </div>
+          </div>
+          <div>
+            <div id="comment-input">
+              <el-input
+                type="textarea"
+                resize="none"
+                :autosize="{ minRows: 1, maxRows: 3}"
+                v-model="myComment"
+              ></el-input>
+            </div>
+            <div id="comment-submit">
+              <button @click="inputComment()">입력</button>
+            </div>
+          </div>
+        </div>
+        <div v-if="userType!=='admin'" id="evaluation-wrapper" class="wrapper">
+          <h3 class="wrapper-title"># 평가</h3>
+          <el-rate @change="sendPoint()" v-model="myPoint" :allow-half="true">
+          </el-rate>
+        </div>
       </div>
     </div>
   </div>
@@ -177,6 +182,9 @@ export default {
     }
   },
   computed: {
+    userType() {
+      return this.$store.state.userType;
+    },
     myEmail () {
       return this.$store.state.userEmail
     },
@@ -265,6 +273,22 @@ export default {
 
 <style lang="scss" scoped>
   #container {
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+  }
+  #control-box {
+    width: 40px;
+    display: block;
+    margin-left: 30px;
+    margin-bottom: 20px;
+    #back-btn {
+      text-decoration: none;
+      color: #2b2b2b;
+      font-size: 35px;
+    }
+  }
+  #main-container {
     display: flex;
     justify-content: space-around;
   }

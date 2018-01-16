@@ -17,6 +17,15 @@
   </el-header>
 </template>
 
+<script>
+export default {
+  mounted(){
+    jdenticon();
+  },
+}
+</script>
+
+
 <style lang="scss" scoped>
   .el-header {
     background-color: #2b2b2b;

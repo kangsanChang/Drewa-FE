@@ -6,9 +6,14 @@
       </h1>
       <span>{{applicants.length}}</span>
     </div>
+    <div id="control-box">
+      <el-button v-if="userType==='admin'" type="success" plain @click="savePass()">합격자 저장하기 <i class="el-icon-success"></i></el-button>
+    </div>
     <div id="table-container">
-      <el-table :data="applicants" height="800" style="width: 100%" :row-key="getRowKeys">
+      <el-table ref="applicationTable" :data="applicants" height="800" style="width: 100%" :row-key="getRowKeys" @selection-change="handleSelectionChange">
         <el-table-column
+          v-if="userType==='admin'"
+          prop="isApplicationPass"
           type="selection"
           align="center"
           width="50">
@@ -57,6 +62,7 @@
           align="center"
         ></el-table-column>
         <el-table-column
+          v-if="userType!=='admin'"
           prop="myPoint"
           label="내 점수"
           width="300"
@@ -86,12 +92,51 @@ export default {
       }
     }
   },
+  computed: {
+    userType(){
+      return this.$store.state.userType
+    }
+  },
   mounted(){
      this.$store.dispatch('getApplications')
       .then((res) => {
-        this.applicants = res.data.data;
+        this.applicants = res;
+        if(this.userType === 'admin'){
+          this.$nextTick(() => {
+            this.initSelection()
+          })
+        }
       })
   },
+  methods: {
+    savePass(){
+      const selected = this.applicants.filter(x => x.isApplicationPass === true)
+      this.$confirm(`합격자를 저장 하시겠습니까? 총 ${selected.length}명의 합격자를 선택 하셨습니다.`, '확인', {
+        confirmButttonText: '네',
+        cancelButtonText: '취소',
+        type: 'info'
+      }).then(() => {
+        this.$store.dispatch('postApplications', { applicants : this.applicants })
+        .then((res) => {
+          this.$notify.success('서류 합격자를 저장 하였습니다.');
+        })
+      })
+    },
+    initSelection() {
+      const passed = this.applicants.filter(x => x.isApplicationPass === true)
+      passed.forEach(row => {
+        this.$refs.applicationTable.toggleRowSelection(row);
+      });
+    },
+    handleSelectionChange(selected) {
+      this.applicants.forEach((applicant) => {
+        applicant.isApplicationPass = false;
+      })
+      selected.forEach((applicant) => {
+        applicant.isApplicationPass = true;
+      })
+    }
+  }
 }
 </script>
 
@@ -102,6 +147,7 @@ export default {
     width: 1300px;
   }
   #info-box {
+    display: inline-block;
     h1 {
       display: inline-block;
       margin: 0;
@@ -110,6 +156,11 @@ export default {
       display: inline-block;
       font-size: 10px;
     }
+  }
+  #control-box {
+    display: inline-block;
+    float: right;
+    margin-bottom: 20px;
   }
   #table-container {
     margin-top: 24px;

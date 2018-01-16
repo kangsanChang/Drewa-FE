@@ -75,6 +75,10 @@ export default {
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
     return axios.delete(BASE_URL + '/recruitmentinfo/' + season)
   },
+  postApplications (token, applicants) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+    return axios.post(BASE_URL + '/evaluation/application', applicants)
+  },
   seasonEnd (token, season) {
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
     return axios.put(BASE_URL + '/recruitmentinfo/' + season + '/end')

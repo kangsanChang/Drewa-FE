@@ -28,14 +28,3 @@ function checkToken (to, from, next) {
     next()
   }
 }
-
-// session storage 에도 type 저장 되어 있음.
-
-// function adminOnly (to, from, next) {
-//   if (store.state.type === 'admin') {
-//     alert('admin only!')
-//     next(to)
-//   } else {
-//     next()
-//   }
-// }
