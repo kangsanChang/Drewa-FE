@@ -187,7 +187,7 @@
     </div>
     <div id="finish-box" v-if="settingForm.isFinished !== true">
       <el-button-group>
-        <el-button id="finish" @click="seasonEnd()">모집 종료 및 박제</el-button>
+        <el-button id="finish-btn" @click="seasonEnd()">모집 종료 및 데이터 삭제</el-button>
       </el-button-group>
     </div>
   </div>
@@ -292,7 +292,7 @@ export default {
       })
       this.$store.dispatch('getRecruitmentInfo', { season })
       .then((res) => {
-        const data = res.data.data;
+        const data = res;
         delete data.interviewGroup
         if(season === 'prev') {
           delete data.mainPosterUrl
@@ -373,7 +373,7 @@ export default {
     },
     seasonEnd(){
       if(!this.checkSeason()){ return; }
-      this.$confirm('모집을 마감하시겠습니까? 저장여부를 확인하시기 바랍니다. 마감 한 후에는 수정할 수 없습니다.', '확인', {
+      this.$confirm('모집을 마감하시겠습니까? 해당 시즌의 모든 지원자, 면접관 정보가 삭제됩니다. 이 작업은 되돌릴 수 없습니다.', '확인', {
         confirmButtonText: '네',
         cancelButtonText: '아니오',
         type: 'info',
@@ -541,6 +541,10 @@ export default {
   #finish-box{
     margin: 50px 0;
     text-align: center;
+    #finish-btn{
+      background-color: red;
+      color: white;
+    }
     #save{
       display: block;
       text-align: center;

@@ -48,7 +48,8 @@
       }
       this.$store.dispatch('getMainRecruitment')
         .then((res) => {
-          this.info = res;
+          // 모집정보 없지(notNow) 않으면 info에 넣어줌
+          if(res !== 'notNow') { this.info = res; }
         })
         .catch((e)=> {
           this.$notify.error('알 수 없는 오류가 발생하였습니다.')

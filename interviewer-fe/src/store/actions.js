@@ -147,7 +147,8 @@ export default {
     return new Promise((resolve, reject) => {
       API.getRecruitmentInfo(store.state.token, payload.season)
         .then((res) => {
-          resolve(res)
+          const data = res.data.data
+          resolve(data)
         })
         .catch((e) => {
           const err = e.response.data

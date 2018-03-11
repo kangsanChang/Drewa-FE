@@ -5,6 +5,10 @@ export default {
     return new Promise((resolve, reject) => {
       API.getMainRecruitment()
         .then((res) => {
+          // 현재 모집중인 recruitment 정보 없으면 204 날아옴
+          if (res.status === 204) {
+            resolve('notNow')
+          }
           const data = res.data.data
           resolve(data)
         })

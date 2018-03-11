@@ -25,7 +25,6 @@ export default {
 }
 </script>
 
-
 <style lang="scss" scoped>
   .el-header {
     background-color: #2b2b2b;
